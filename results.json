@@ -1,0 +1,319 @@
+{
+    "2366050": {
+        "name": "Bumper Tanks",
+        "release_date": "Feb 12, 2024",
+        "required_age": 0,
+        "price": 5.99,
+        "dlc_count": 0,
+        "detailed_description": "A childhood dream comes true. Play with your remote controlled tank, dash in the arena and eliminate others to become that last tank standing! DODGE. JUMP, SHOOT &amp; DESTROY! BUMPER TANKS is a 4-player local &amp; online party game inspired by the classic couch multiplayer genre. It's all about intense versus matches that are easy to jump into, but difficult to truly master. You'll need serious skills to emerge victorious from the fierce tank battles that ensue. So gather your friends, grab some snacks, and get ready for some seriously blasting gameplay. ABOUT ARVIS We’re an independent studio aiming to create magical experiences through games that we’re developing. Bumper Tanks is an internal game jam project that we were excited to develop. BUMPER TANKS is currently in an early development stage, so pretty much everything in the game might change in the future. We are a small team and we are working on the game in our spare time. Join our Discord server to take part in the future of the game, plus get access to early development updates. Official Links Discord : NOTE : MacOS and LINUX Please keep in mind that MacOS and Linux builds are experimental if you encounter any issues let us know on the discord. Enjoy!",
+        "about_the_game": "A childhood dream comes true. Play with your remote controlled tank, dash in the arena and eliminate others to become that last tank standing! DODGE. JUMP, SHOOT &amp; DESTROY! BUMPER TANKS is a 4-player local &amp; online party game inspired by the classic couch multiplayer genre. It's all about intense versus matches that are easy to jump into, but difficult to truly master. You'll need serious skills to emerge victorious from the fierce tank battles that ensue. So gather your friends, grab some snacks, and get ready for some seriously blasting gameplay. ABOUT ARVIS We’re an independent studio aiming to create magical experiences through games that we’re developing. Bumper Tanks is an internal game jam project that we were excited to develop. BUMPER TANKS is currently in an early development stage, so pretty much everything in the game might change in the future. We are a small team and we are working on the game in our spare time. Join our Discord server to take part in the future of the game, plus get access to early development updates. Official Links Discord : NOTE : MacOS and LINUX Please keep in mind that MacOS and Linux builds are experimental if you encounter any issues let us know on the discord. Enjoy!",
+        "short_description": "Take control of a tank and dash into the fight in this couch multiplayer, fast-paced, twin-stick shooter game! Collect various power-ups to hook around the destructible environment and blast your friends with whatever it takes. Remember: One shot, One kill!",
+        "reviews": "",
+        "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/2366050/header.jpg?t=1711373613",
+        "website": "https://www.arvisgames.com",
+        "support_url": "https://arvisgames.com",
+        "support_email": "support@arvisgames.com",
+        "windows": true,
+        "mac": true,
+        "linux": true,
+        "metacritic_score": 0,
+        "metacritic_url": "",
+        "achievements": 10,
+        "recommendations": 0,
+        "notes": "",
+        "supported_languages": [
+            "English"
+        ],
+        "full_audio_languages": [],
+        "packages": [
+            {
+                "title": "Buy Bumper Tanks",
+                "description": "",
+                "subs": [
+                    {
+                        "text": "Bumper Tanks - $5.99",
+                        "description": "",
+                        "price": 5.99
+                    }
+                ]
+            }
+        ],
+        "developers": [
+            "Arvis Games"
+        ],
+        "publishers": [
+            "Arvis Games"
+        ],
+        "categories": [
+            "Multi-player",
+            "PvP",
+            "Online PvP",
+            "Shared/Split Screen PvP",
+            "Co-op",
+            "Online Co-op",
+            "Shared/Split Screen Co-op",
+            "Shared/Split Screen",
+            "Steam Achievements",
+            "Full controller support",
+            "Remote Play Together",
+            "Family Sharing"
+        ],
+        "genres": [
+            "Indie",
+            "Early Access"
+        ],
+        "screenshots": [
+            "https://cdn.akamai.steamstatic.com/steam/apps/2366050/ss_b54a4384ace40f0422857275c6f2c56a448c53be.1920x1080.jpg?t=1711373613",
+            "https://cdn.akamai.steamstatic.com/steam/apps/2366050/ss_ea1d0d29a301925b35c70044e0c77d421afe2417.1920x1080.jpg?t=1711373613",
+            "https://cdn.akamai.steamstatic.com/steam/apps/2366050/ss_cc4225d80feaf3a523c080cb99ea263f4c0ff709.1920x1080.jpg?t=1711373613",
+            "https://cdn.akamai.steamstatic.com/steam/apps/2366050/ss_f676c9de6057249f95b3a343e4e26f95d6ef4596.1920x1080.jpg?t=1711373613",
+            "https://cdn.akamai.steamstatic.com/steam/apps/2366050/ss_a0dc4b3455d50defbbccf692f18a20100a4d7927.1920x1080.jpg?t=1711373613",
+            "https://cdn.akamai.steamstatic.com/steam/apps/2366050/ss_4f962f3aa1b3bfe955e39c83b5e924a9ae7626b8.1920x1080.jpg?t=1711373613",
+            "https://cdn.akamai.steamstatic.com/steam/apps/2366050/ss_0671c8c2db7b6e0fb5a9d901d7d47e822d676ee7.1920x1080.jpg?t=1711373613"
+        ],
+        "movies": [
+            "http://cdn.akamai.steamstatic.com/steam/apps/257011005/movie_max.mp4?t=1711373601"
+        ],
+        "user_score": 0,
+        "score_rank": "",
+        "positive": 7,
+        "negative": 0,
+        "estimated_owners": "0 - 20000",
+        "average_playtime_forever": 0,
+        "average_playtime_2weeks": 0,
+        "median_playtime_forever": 0,
+        "median_playtime_2weeks": 0,
+        "peak_ccu": 0,
+        "tags": {
+            "Early Access": 118,
+            "Action": 107,
+            "4 Player Local": 101,
+            "Local Co-Op": 98,
+            "Twin Stick Shooter": 95,
+            "Arena Shooter": 92,
+            "PvP": 86,
+            "Casual": 84,
+            "Arcade": 82,
+            "Battle Royale": 80,
+            "Shooter": 78,
+            "3D Platformer": 76,
+            "Looter Shooter": 74,
+            "3D": 70,
+            "Top-Down": 66,
+            "Local Multiplayer": 64,
+            "Family Friendly": 62,
+            "Controller": 60,
+            "Mechs": 57,
+            "Co-op": 55
+        }
+    },
+    "1509660": {
+        "name": "重生战士",
+        "release_date": "Feb 3, 2021",
+        "required_age": 0,
+        "price": 4.99,
+        "dlc_count": 0,
+        "detailed_description": "让我们尽量简单地描述. 这是一个横版过关街机动作游戏，如果您已对此类游戏很熟悉，则可跳过该说明. 本游戏包含多个不同技能风格的角色，同时，您可以使用冷/热兵器与敌人进行战斗: 包含紧凑连贯的连击系统，且对应不同的随机奖励: 可使用武器对敌人进行攻击: 包含多种热/冷兵器，且各个特点不尽相同. 一些特殊的强力英雄是无法使用掉落武器的——他们自身就配备了特殊的专用武器: 一旦完成主线关卡，您可进入到生存模式，该模式提供对强力特殊英雄的解锁支持. 游戏难度会随着您的熟练增加而增加，同时也会因为玩家英雄的阵亡而减少. 游戏提供隐藏命令以及成就系统. 来试试看您到底会有多厉害!",
+        "about_the_game": "让我们尽量简单地描述. 这是一个横版过关街机动作游戏，如果您已对此类游戏很熟悉，则可跳过该说明. 本游戏包含多个不同技能风格的角色，同时，您可以使用冷/热兵器与敌人进行战斗: 包含紧凑连贯的连击系统，且对应不同的随机奖励: 可使用武器对敌人进行攻击: 包含多种热/冷兵器，且各个特点不尽相同. 一些特殊的强力英雄是无法使用掉落武器的——他们自身就配备了特殊的专用武器: 一旦完成主线关卡，您可进入到生存模式，该模式提供对强力特殊英雄的解锁支持. 游戏难度会随着您的熟练增加而增加，同时也会因为玩家英雄的阵亡而减少. 游戏提供隐藏命令以及成就系统. 来试试看您到底会有多厉害!",
+        "short_description": "街机横屏卷轴动作类型游戏。 以武术打击敌人，包括四向步行跑跳跃以及特殊技能。 使用冷/热武器打击敌人。 随机奖励，激烈和紧凑的节奏。 作者原创复古节奏布鲁斯音乐。",
+        "reviews": "",
+        "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1509660/header.jpg?t=1612339331",
+        "website": "",
+        "support_url": "",
+        "support_email": "resightmq@qq.com",
+        "windows": true,
+        "mac": false,
+        "linux": false,
+        "metacritic_score": 0,
+        "metacritic_url": "",
+        "achievements": 8,
+        "recommendations": 0,
+        "notes": "",
+        "supported_languages": [
+            "Simplified Chinese"
+        ],
+        "full_audio_languages": [],
+        "packages": [
+            {
+                "title": "Buy 重生战士",
+                "description": "",
+                "subs": [
+                    {
+                        "text": "重生战士 - $4.99",
+                        "description": "",
+                        "price": 4.99
+                    }
+                ]
+            }
+        ],
+        "developers": [
+            "Resight Studio"
+        ],
+        "publishers": [
+            "Resight Studio"
+        ],
+        "categories": [
+            "Single-player",
+            "Steam Achievements",
+            "Family Sharing"
+        ],
+        "genres": [
+            "Action",
+            "Indie",
+            "RPG"
+        ],
+        "screenshots": [
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_06e47049b257d4c240f4e4ffc209ba38502d3f7b.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_290ef4d7e657a7d169408b1d5e8476bd639a4349.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_0e796197e37bf5ecfd7ae2e22bb9657bb7c25386.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_20274e7968c39f4bf3058a21bfbf6a7a1e666294.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_83194f020a4b724f4fb5be25e935d05e8ef3d366.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_76143fce46629e27c65e4fe76331f8092e11554c.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_0dbda32834adcda61ddf966fbc800da6f3ac3488.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_fbfe6c37662eb3a9a43fc15dea3a12f3bb0ea772.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_5a913fbddc51454e0ff080add628dbe2d7865e4f.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_fa1f9a529fa1492fc3b3a950f98a539ee14fd931.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_21479b03262790a4d8fb35197ea0f588523cb222.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_2221894392196dd7e0dcd50843c7df79a8249b6c.1920x1080.jpg?t=1612339331",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1509660/ss_b3a17a52e85dfe7f3eccde1846352845d21935bc.1920x1080.jpg?t=1612339331"
+        ],
+        "movies": [
+            "http://cdn.akamai.steamstatic.com/steam/apps/256818934/movie_max.mp4?t=1611165493"
+        ],
+        "user_score": 0,
+        "score_rank": "",
+        "positive": 0,
+        "negative": 1,
+        "estimated_owners": "0 - 20000",
+        "average_playtime_forever": 0,
+        "average_playtime_2weeks": 0,
+        "median_playtime_forever": 0,
+        "median_playtime_2weeks": 0,
+        "peak_ccu": 0,
+        "tags": {
+            "Action": 72,
+            "RPG": 65,
+            "Fighting": 42,
+            "Arcade": 40,
+            "3D Fighter": 36,
+            "Side Scroller": 32,
+            "3D": 28,
+            "Metroidvania": 27,
+            "Anime": 25,
+            "Old School": 23,
+            "Indie": 21,
+            "Retro": 21,
+            "Sci-fi": 19,
+            "Combat": 17,
+            "Martial Arts": 15,
+            "Singleplayer": 13
+        }
+    },
+    "1203940": {
+        "name": "ZERONE - First Encounter",
+        "release_date": "Dec 18, 2023",
+        "required_age": 0,
+        "price": 12.99,
+        "dlc_count": 0,
+        "detailed_description": "Discord Check out our future plans and give us feedback on our game on our Discord. We are waiting for your feedback. Tutorial Check out how to play the game through YouTube Shorts. All it takes just 2 minutes! About the Game Machine Empire VS Resistance Zerone's Early Access is now available! This is a VR FPS game about Resistance fights against the Empire army that dominates humanity. PVE mode: Resist the Empire army. Multiplay is possible for up to 3 players. Players become resistant and must defeat the Empire bosses within a set time. PVP mode: Overpower the resistance. Up to 4 players will battle in 1vs2. One person will fight as the boss of the Empire army. The Empire players must continue to attack the resistance for a certain period of time and survive. Resistance players' goal is to defeat the Empire players within time. All battles are fast-paced. We wanted VR beginners to enjoy the fun shooting game through the high-quality graphics of Unreal Engine 5. This is a great game to take your first VR gaming experience! “Zerone” has now taken its first steps! We have a lot of love for  'Zerone', and we are working hard to include multiple modes and expandable content in the game in the future.",
+        "about_the_game": "Machine Empire VS Resistance Zerone's Early Access is now available! This is a VR FPS game about Resistance fights against the Empire army that dominates humanity. PVE mode: Resist the Empire army. Multiplay is possible for up to 3 players. Players become resistant and must defeat the Empire bosses within a set time. PVP mode: Overpower the resistance. Up to 4 players will battle in 1vs2. One person will fight as the boss of the Empire army. The Empire players must continue to attack the resistance for a certain period of time and survive. Resistance players' goal is to defeat the Empire players within time. All battles are fast-paced. We wanted VR beginners to enjoy the fun shooting game through the high-quality graphics of Unreal Engine 5. This is a great game to take your first VR gaming experience! “Zerone” has now taken its first steps! We have a lot of love for  'Zerone', and we are working hard to include multiple modes and expandable content in the game in the future.",
+        "short_description": "ZERONE is a PC-based high-quality VR game, and it is a Hyper FPS game that competes with the enemy units of the mechanic series.",
+        "reviews": "",
+        "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1203940/header.jpg?t=1703641644",
+        "website": "https://www.timent.co.kr/",
+        "support_url": "http://www.timent.co.kr",
+        "support_email": "timent@timent.co.kr",
+        "windows": true,
+        "mac": false,
+        "linux": false,
+        "metacritic_score": 0,
+        "metacritic_url": "",
+        "achievements": 0,
+        "recommendations": 0,
+        "notes": "",
+        "supported_languages": [
+            "English"
+        ],
+        "full_audio_languages": [
+            "English"
+        ],
+        "packages": [
+            {
+                "title": "Buy ZERONE - First Encounter",
+                "description": "",
+                "subs": [
+                    {
+                        "text": "ZERONE - $12.99",
+                        "description": "",
+                        "price": 12.99
+                    }
+                ]
+            }
+        ],
+        "developers": [
+            "The TIM Entertainment Co. Ltd"
+        ],
+        "publishers": [
+            "The TIM Entertainment Co. Ltd"
+        ],
+        "categories": [
+            "Single-player",
+            "Multi-player",
+            "PvP",
+            "Online PvP",
+            "Co-op",
+            "Online Co-op",
+            "Tracked Controller Support",
+            "VR Only",
+            "Steam Leaderboards",
+            "Family Sharing"
+        ],
+        "genres": [
+            "Action"
+        ],
+        "screenshots": [
+            "https://cdn.akamai.steamstatic.com/steam/apps/1203940/ss_4abeed0e62ac65edc77e28edeac443fd3379b285.1920x1080.jpg?t=1703641644",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1203940/ss_99896bbdd7e3c98641ccdfcf33d6e8b9fad2b5a5.1920x1080.jpg?t=1703641644",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1203940/ss_849cb59c920b668027e4609ba3a17a6c91216b6e.1920x1080.jpg?t=1703641644",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1203940/ss_cc3bf497d4c2a9942c722e87d7cb8c9d76148877.1920x1080.jpg?t=1703641644",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1203940/ss_3bb00eb857c54f9dca6367d232071ffa5e61092c.1920x1080.jpg?t=1703641644",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1203940/ss_a63d2b4d048dbcd78436fda0e1a493d559363d43.1920x1080.jpg?t=1703641644",
+            "https://cdn.akamai.steamstatic.com/steam/apps/1203940/ss_b9888c4eab9d3d274f1ae6d3420cc69f3b7aa3da.1920x1080.jpg?t=1703641644"
+        ],
+        "movies": [
+            "http://cdn.akamai.steamstatic.com/steam/apps/256769161/movie_max.mp4?t=1701998009"
+        ],
+        "user_score": 0,
+        "score_rank": "",
+        "positive": 2,
+        "negative": 1,
+        "estimated_owners": "0 - 20000",
+        "average_playtime_forever": 0,
+        "average_playtime_2weeks": 0,
+        "median_playtime_forever": 0,
+        "median_playtime_2weeks": 0,
+        "peak_ccu": 0,
+        "tags": {
+            "Action": 211,
+            "FPS": 186,
+            "VR": 183,
+            "Multiplayer": 178,
+            "Early Access": 175,
+            "Shooter": 169,
+            "Sci-fi": 164,
+            "Science": 157,
+            "Robots": 149,
+            "Cyberpunk": 141,
+            "Space": 131,
+            "Fantasy": 129,
+            "6DOF": 117,
+            "PvE": 109,
+            "PvP": 105,
+            "Singleplayer": 92,
+            "Co-op": 76,
+            "4 Player Local": 61,
+            "Local Multiplayer": 42,
+            "Local Co-Op": 28
+        }
+    }
+}
