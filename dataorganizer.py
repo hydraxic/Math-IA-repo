@@ -5,6 +5,7 @@ from matplotlib.ticker import PercentFormatter;
 from scipy import stats;
 import json;
 import math;
+import seaborn as sns;
 
 file = open("games.json", encoding = "utf8");
 data = json.load(file);
@@ -17,6 +18,28 @@ pricesPopularity = [[prices], [popularity]];
 
 def NormalizeData(data):
     return (data - np.min(data)) / (np.max(data) - np.min(data))
+# x - 101 / 16740 - 101 = 0.4
+# x = 6756.6
+
+def reject_outliers_median(data, m = 2.):
+    d = np.abs(data - np.median(data))
+    mdev = np.median(d)
+    s = d/mdev if mdev else np.zeros(len(d))
+    return data[s<m]
+
+def reject_outliers_mean(data, m=2):
+    return data[abs(data - np.mean(data)) < m * np.std(data)]
+
+def reject_outliers_merge(data, m=2):
+    return data[abs(data - np.median(data)) < m * np.std(data)]
+
+def IQR_outliers(data):
+    sorted(data)
+    Q1,Q3 = np.percentile(data , [25,75])
+    IQR = Q3 - Q1
+    lower_range = Q1 - (1.5 * IQR)
+    upper_range = Q3 + (1.5 * IQR)
+    return [d for d in data if lower_range <= d <= upper_range]
 
 '''
 def is_outlier(points, thresh=3.5):
@@ -133,6 +156,9 @@ ax2.stairs(NormalizeData(rcounts), rbins);
 
 plt.show();
 
+popularity_no_outliers = IQR_outliers(np.array(popularity));
+reviewRatio = IQR_outliers(np.array(reviewRatio));
+
 # REVIEW RATIO CURVE
 fig, (ax1, ax2) = plt.subplots(nrows = 1, ncols = 2);
 reviewRatio.sort();
@@ -140,29 +166,44 @@ mu = np.mean(reviewRatio); print(mu)
 sigma = np.std(reviewRatio); print(sigma)
 #x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
 #x = np.linspace(0, 1, 100)
-ax1.plot(NormalizeData(reviewRatio), np.array(stats.norm.pdf(reviewRatio, mu, sigma)))
-ax1.set(xlabel="Positive Review / Negative Reviews Ratio (Normalized) Min: " + str(round(min(reviewRatio), 4)) + " Max: " + str(round(max(reviewRatio), 4)), ylabel = "Probability", title="Normal Distribution of Review Ratio")
+#ax1.plot(NormalizeData(reviewRatio), np.array(stats.norm.pdf(reviewRatio, mu, sigma)))
+norm_pdf = np.array(stats.norm.pdf(reviewRatio, mu, sigma));
+ax1.plot(reviewRatio, norm_pdf)
+ax1.set(xlabel="Positive Review / Negative Reviews Ratio (Outliers Removed) Min: " + str(round(min(reviewRatio), 4)) + " Max: " + str(round(max(reviewRatio), 4)), ylabel = "Probability", title="Normal Distribution of Review Ratio")
 #ax = plt.gca()
 #ax.set_xlim([0, max(reviewRatio)])
 #ax.set_ylim([0, 1])
+# test value to convert to z score and convert to popularity
+#sample_value = 0.0025;
+sample_value = 10 #np.interp(25, reviewRatio, norm_pdf);
+z = (sample_value - mu) / sigma;
 
 # POPULARITY CURVE
 
 popularity.sort();
-mu = np.mean(popularity); print(mu)
-sigma = np.std(popularity); print(sigma)
+mu = np.mean(popularity_no_outliers); print(mu)
+sigma = np.std(popularity_no_outliers); print(sigma)
 #x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
 #x = np.linspace(0, 1, 100)
-ax2.plot(NormalizeData(popularity), np.array(stats.norm.pdf(popularity, mu, sigma)))
-ax2.set(xlabel="Highest Concurrent Players (Normalized) Min: " + str(min(popularity)) + " Max: " + str(max(popularity)), ylabel = "Probability", title="Normal Distribution of Highest Concurrent Players")
+#ax2.plot(NormalizeData(popularity_no_outliers), np.array(stats.norm.pdf(popularity_no_outliers, mu, sigma)))
+norm_pdf = np.array(stats.norm.pdf(popularity_no_outliers, mu, sigma));
+ax2.plot(popularity_no_outliers, norm_pdf)
+ax2.set(xlabel="Highest Concurrent Players (Outliers Removed) Min: " + str(min(popularity_no_outliers)) + " Max: " + str(max(popularity_no_outliers)), ylabel = "Probability", title="Normal Distribution of Highest Concurrent Players")
 #ax = plt.gca()
 #ax.set_xlim([0, 1])
+
+pop_result = z * sigma + mu;
+#sample_result = np.interp(pop_result, norm_pdf, popularity_no_outliers);
+print(z, pop_result);
+
 plt.show();
 #ax.set_ylim([0, 1])
 plt.hist2d(reviewRatio, popularity, bins=(np.arange(min(reviewRatio), max(reviewRatio) + 5, 5), np.arange(min(reviewRatio), max(reviewRatio) + 5, 5)), cmap = plt.cm.jet)
 plt.colorbar();
 plt.show()
 
+sns.boxplot(popularity); # Boxplot outliers default calculation is 1.5 * IQR
+plt.show();
 
 #reviewRatio = positiveReviews / negativeReviews;
 
