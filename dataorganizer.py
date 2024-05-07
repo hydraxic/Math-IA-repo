@@ -16,6 +16,9 @@ reviewRatio = [];
 positiveReviewsArr = [];
 pricesPopularity = [[prices], [popularity]];
 
+monthsData = {"Jan": [0, 0], "Feb": [0, 0], "Mar": [0, 0], "Apr": [0, 0], "May": [0, 0], "Jun": [0, 0], "Jul": [0, 0], "Aug": [0, 0], "Sep": [0, 0], "Oct": [0, 0], "Nov": [0, 0], "Dec": [0, 0]};
+monthsAverage = {"Jan": 0, "Feb": 0, "Mar": 0, "Apr": 0, "May": 0, "Jun": 0, "Jul": 0, "Aug": 0, "Sep": 0, "Oct": 0, "Nov": 0, "Dec": 0};
+
 def NormalizeData(data):
     return (data - np.min(data)) / (np.max(data) - np.min(data))
 # x - 101 / 16740 - 101 = 0.4
@@ -75,6 +78,9 @@ def is_outlier(points, thresh=3.5):
 
     return modified_z_score > thresh
 '''
+
+count = 0;
+
 for i in data:
     name = data[i]["name"];
     releaseDate = data[i]["release_date"];
@@ -89,7 +95,11 @@ for i in data:
             reviewRatio.append(positiveReviews/negativeReviews);
             positiveReviewsArr.append(positiveReviews);
             prices.append(price);
+            monthsData[releaseDate.split(" ")[0]][0] += 1;
+            monthsData[releaseDate.split(" ")[0]][1] += peakConcurrent;
+            count += 1;
 
+print(count);
 
 #for i in prices:
 #    if pricesPopularity[i]:
@@ -106,6 +116,62 @@ for i, v in enumerate(popularity):
 '''
 #cf = np.polyfit(prices, popularity, 1);
 #poly1d = np.poly1d(cf);
+
+for i, v in monthsData.items():
+    monthsAverage[i] = v[1] / v[0];
+
+
+plt.bar(monthsAverage.keys(), monthsAverage.values());
+plt.title("Games Released by Month");
+
+
+plt.show();
+
+
+
+'''
+popularity.sort();
+prices.sort();
+
+popularity_no_outliers = IQR_outliers(np.array(popularity));
+prices_no_outliers = IQR_outliers(np.array(prices));
+
+# PRICE CURVE
+fig, (ax1, ax2) = plt.subplots(nrows = 1, ncols = 2);
+prices_no_outliers.sort();
+mu = np.mean(prices_no_outliers); print(mu)
+sigma = np.std(prices_no_outliers); print(sigma)
+
+norm_pdf = np.array(stats.norm.pdf(prices_no_outliers, mu, sigma));
+ax1.plot(prices_no_outliers, norm_pdf)
+ax1.set(xlabel="Prices (Outliers Removed) Min: " + str(round(min(prices_no_outliers), 4)) + " Max: " + str(round(max(prices_no_outliers), 4)), ylabel = "Probability", title="Normal Distribution of Prices")
+
+sample_value = 40
+z = (sample_value - mu) / sigma;
+
+# POPULARITY CURVE
+popularity.sort();
+mu = np.mean(popularity_no_outliers); print(mu)
+sigma = np.std(popularity_no_outliers); print(sigma)
+
+norm_pdf = np.array(stats.norm.pdf(popularity_no_outliers, mu, sigma));
+ax2.plot(popularity_no_outliers, norm_pdf)
+ax2.set(xlabel="Highest Concurrent Players (Outliers Removed) Min: " + str(min(popularity_no_outliers)) + " Max: " + str(max(popularity_no_outliers)), ylabel = "Probability", title="Normal Distribution of Highest Concurrent Players")
+
+pop_result = z * sigma + mu;
+print(z, pop_result);
+
+plt.show();
+
+
+
+
+
+
+
+
+
+
 
 slope, intercept, r_value, p_value, std_err = stats.linregress(prices, popularity);
 line = slope*np.array(prices)+intercept;
@@ -210,3 +276,9 @@ plt.show();
 
 
 #clump into 1000 data points per dot
+
+
+
+
+
+'''
