@@ -6,6 +6,7 @@ from scipy import stats;
 import json;
 import math;
 import seaborn as sns;
+import powerlaw;
 
 file = open("games.json", encoding = "utf8");
 data = json.load(file);
@@ -129,7 +130,7 @@ plt.show();
 
 
 
-'''
+
 popularity.sort();
 prices.sort();
 
@@ -201,14 +202,17 @@ bin_lims = np.linspace(0,1,num_bin+1)
 bin_centers = 0.5*(bin_lims[:-1]+bin_lims[1:])
 bin_widths = bin_lims[1:]-bin_lims[:-1]
 
+popularity_no_outliers = IQR_outliers(np.array(popularity));
+reviewRatio = IQR_outliers(np.array(reviewRatio));
+
 reviewRatio.sort();
-popularity.sort();
+popularity_no_outliers.sort();
 
 fig, (ax1, ax2) = plt.subplots(nrows = 1, ncols = 2);
-print(max(popularity), min(popularity), max(reviewRatio), min(reviewRatio))
-counts, bins = np.histogram(popularity, bins=np.arange(min(popularity), max(popularity) + 1, (max(popularity)-min(popularity)) / 60));
+print(max(popularity_no_outliers), min(popularity_no_outliers), max(reviewRatio), min(reviewRatio))
+counts, bins = np.histogram(popularity_no_outliers, bins=np.arange(min(popularity_no_outliers), max(popularity_no_outliers) + 1, (max(popularity_no_outliers)-min(popularity_no_outliers)) / 60));
 ax1.stairs(NormalizeData(counts), bins);
-#plt.show();
+#plt.show();z
 
 rcounts, rbins = np.histogram(reviewRatio, bins=np.arange(min(reviewRatio), max(reviewRatio) + 1, (max(reviewRatio)-min(reviewRatio)) / 60));
 ax2.stairs(NormalizeData(rcounts), rbins);
@@ -222,8 +226,8 @@ ax2.stairs(NormalizeData(rcounts), rbins);
 
 plt.show();
 
-popularity_no_outliers = IQR_outliers(np.array(popularity));
-reviewRatio = IQR_outliers(np.array(reviewRatio));
+#popularity_no_outliers = IQR_outliers(np.array(popularity));
+#reviewRatio = IQR_outliers(np.array(reviewRatio));
 
 # REVIEW RATIO CURVE
 fig, (ax1, ax2) = plt.subplots(nrows = 1, ncols = 2);
@@ -233,15 +237,19 @@ sigma = np.std(reviewRatio); print(sigma)
 #x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
 #x = np.linspace(0, 1, 100)
 #ax1.plot(NormalizeData(reviewRatio), np.array(stats.norm.pdf(reviewRatio, mu, sigma)))
-norm_pdf = np.array(stats.norm.pdf(reviewRatio, mu, sigma));
-ax1.plot(reviewRatio, norm_pdf)
+#norm_pdf = np.array(stats.norm.pdf(reviewRatio, mu, sigma));
+#ax1.plot(reviewRatio, norm_pdf)
+edges, hist = powerlaw.pdf(reviewRatio)
+bin_centers = (edges[1:]+edges[:-1])/2.0
+ax1.plot(bin_centers, hist)
+
 ax1.set(xlabel="Positive Review / Negative Reviews Ratio (Outliers Removed) Min: " + str(round(min(reviewRatio), 4)) + " Max: " + str(round(max(reviewRatio), 4)), ylabel = "Probability", title="Normal Distribution of Review Ratio")
 #ax = plt.gca()
 #ax.set_xlim([0, max(reviewRatio)])
 #ax.set_ylim([0, 1])
 # test value to convert to z score and convert to popularity
 #sample_value = 0.0025;
-sample_value = 10 #np.interp(25, reviewRatio, norm_pdf);
+sample_value = 2 #np.interp(25, reviewRatio, norm_pdf);
 z = (sample_value - mu) / sigma;
 
 # POPULARITY CURVE
@@ -252,8 +260,14 @@ sigma = np.std(popularity_no_outliers); print(sigma)
 #x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
 #x = np.linspace(0, 1, 100)
 #ax2.plot(NormalizeData(popularity_no_outliers), np.array(stats.norm.pdf(popularity_no_outliers, mu, sigma)))
-norm_pdf = np.array(stats.norm.pdf(popularity_no_outliers, mu, sigma));
-ax2.plot(popularity_no_outliers, norm_pdf)
+    #norm_pdf = np.array(stats.norm.pdf(popularity_no_outliers, mu, sigma));
+#fit = stats.powerlaw.fit(popularity_no_outliers)
+#power_pdf = np.array(fit)
+edges, hist = powerlaw.pdf(popularity_no_outliers)
+bin_centers = (edges[1:]+edges[:-1])/2.0
+ax2.plot(bin_centers, hist)
+
+#ax2.plot(popularity_no_outliers, power_pdf)
 ax2.set(xlabel="Highest Concurrent Players (Outliers Removed) Min: " + str(min(popularity_no_outliers)) + " Max: " + str(max(popularity_no_outliers)), ylabel = "Probability", title="Normal Distribution of Highest Concurrent Players")
 #ax = plt.gca()
 #ax.set_xlim([0, 1])
@@ -281,4 +295,3 @@ plt.show();
 
 
 
-'''
