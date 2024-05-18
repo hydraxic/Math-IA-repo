@@ -14,6 +14,10 @@ import requests
 from bs4 import BeautifulSoup
 import random;
 from requests.auth import HTTPProxyAuth
+from pytrends.request import TrendReq
+import pandas as pd;
+import warnings
+warnings.filterwarnings('ignore')
 #import argparse
 
 #parser = argparse.ArgumentParser(description='Get Google Count.')
@@ -30,6 +34,93 @@ user_agent_list = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
 ]
 
+headerslist = [
+    {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-CA,en-US;q=0.7,en;q=0.3',
+    # 'Accept-Encoding': 'gzip, deflate, br, zstd',
+    'Connection': 'keep-alive',
+    'Referer': 'https://trends.google.com/trends/explore?cat=41&date=today^%^205-y&q=Terraria&hl=en',
+    # 'Cookie': '__utma=10102256.1469059818.1716047426.1716047426.1716047426.1; __utmb=10102256.31.8.1716050129523; __utmc=10102256; __utmz=10102256.1716047426.1.1.utmcsr=trends.google.com^|utmccn=(referral)^|utmcmd=referral^|utmcct=/; __utmt=1; 1P_JAR=2024-05-18-16; NID=514=k469KUGUDreXJUYn1hrKZkfGBZhWYNjbEh_3JS16MRoVYvHsWwCGzlqr0qx_F2g5ZvUluq4J3TmdTxy0Y9HXqPuxbHIsEEHcD3t2mOTzKZepE8_0gpVJtlLLw7PqFo-lXdDVvliIeyiOTLhbKXFyr2i27s3rtyC5lAy63qr5L-iS2c1I7TgAdaKMEH3Mnj3QjdtqNuDDJMKpZalmK7GpaYP7jofOQrcavnFllCAb8TT8umQW7g-tLZOiot09VqsMu7IyzHP1xEBynaQfGSrFj_VH1yEEQRpyzTRJEfQk1O2Nd8pJbOB2XPaGSJI1USEXUvKnzDN8m0iLhSuOMadcoqbfKiFKeeCcmj9POFw8nSGiUDHy4W3V7OiO9GPpXNooZwbPCzmwSVeS5SBlnVA5JL3gFk9f_v8pw-7n7Z0BlKvMzEmqCphU0mertPshQ6MhPue38OmQmYIEmJbeyQkIqkTPuEVVcJUdD9sBeEkDadtSMLPLOmVswqT9fyzBKhQA-_Shz96qE0zllKHPN-DPraJ5oeWRckGG_E8RDSge_d5cYJeggLuSRKPA_FQ0WW53IrzSI_9Hb91gPmqNd5h21Z6zebIzXYK7AVmVjEfF9LyR-GwDaCJXyAE-Ou6Qjjq4UziYfubjBlPnK0HpQHqL2lXZ_4MVi8VQ_wpGUxP_8fd-QlSRYHqkMGXtLKV9t8YHp6-ljAJny7hZq7J71S_A7HAMWdFk6rgI39yaXs6jYUHWI8QwjKsH-N5NbP5XH8V20oKS5qd1KvyVDnG5CKgRt1K7lrSfqHIjZ4HqZng8hd1w3IFUCSDG5H-SGqxivFTFmw; SEARCH_SAMESITE=CgQItJoB; SID=g.a000jwi6jNKIwaS5vA5OPua-NoBIZrlSWnoUT4FCRcoYTE0IJLvD_XZ3JafDNVU45BkQo16R0gACgYKAZ8SAQASFQHGX2Mi_LUtf1yVaOPWH20n6kTbWRoVAUF8yKoJGETXvoZKnrMs_AeKlUfC0076; __Secure-1PSID=g.a000jwi6jNKIwaS5vA5OPua-NoBIZrlSWnoUT4FCRcoYTE0IJLvDnUMgn2buYYviJIsTWPd_3AACgYKAc4SAQASFQHGX2MiljFvDZpze9wvhNmq3BbOABoVAUF8yKpXxBDo8_QT5RzYbLZfuqmT0076; __Secure-3PSID=g.a000jwi6jNKIwaS5vA5OPua-NoBIZrlSWnoUT4FCRcoYTE0IJLvDsiWBcb1fX83lFnFzUKUI6QACgYKAfwSAQASFQHGX2MiHRlw0Aq_oQk1pZERmY0CuBoVAUF8yKqbCh9QOdmNzTMzHa_NoBeO0076; HSID=AN2rkliYJT00EVPv1; SSID=A6wRsOhYni8vpDAP5; APISID=PALo7RcJRBVoTMRy/A02t1f5UvCwyAVmWC; SAPISID=OBvh9He9sC2ST3oC/AlVn206nHihBNZaZ4; __Secure-1PAPISID=OBvh9He9sC2ST3oC/AlVn206nHihBNZaZ4; __Secure-3PAPISID=OBvh9He9sC2ST3oC/AlVn206nHihBNZaZ4; SIDCC=AKEyXzXFiC-FZ-SJzyRvyFJA7-VvZ0vsfmyjeGPKlM9W-OrgpKHarmKrzK5gjlaIxNyf-r3xvlU; __Secure-1PSIDCC=AKEyXzViqtkxPFgOL9TAJhGPMkG1NhwRS236zEiTeofmh4ICALD6XuaCIka2Jo1LuNQnOVJy_Ws; __Secure-3PSIDCC=AKEyXzVJYZLV0Vl-Q-9VkpUBzVJTglqYUnAX0YR-uUigusY4lpbKE5VoqIGV967CoCvYQXvmV8_H; __Secure-1PSIDTS=sidts-CjIBLwcBXDI4uO9CtXOTQFhs5wl-8TxYtcVUQwbzLqK0So3ZhbzX28tJAvS4GHnsXO1knxAA; __Secure-3PSIDTS=sidts-CjIBLwcBXDI4uO9CtXOTQFhs5wl-8TxYtcVUQwbzLqK0So3ZhbzX28tJAvS4GHnsXO1knxAA; __Secure-ENID=19.SE=IoeaD3O5IBotC3EBWcaVGmZTSb3VS8dHL2r-NtaCklgUtx_jJuTKJaaCnFY19svuVjL_urR98brC8NFKC5o7xpxNhWFIZxMq4ztvJnWOA6SDSjOK5CCIVF7coYBGL6a09LbpsXcz2Q-Y2zsmu9IPiYgW6V7EWBQGMsiTZJd7g85B0_JGdpgpVGifkxhdEJ676SKowBlSVxNUlMbIqTWgsqOu1jFDtJk8P8KsLqdgSENRZBxpFqy7A2st9MO2qOQP5BAUPFtKwy3gYgX3r-K6khYJE8H_xA-QCoOFj1dK9J1tUUoHcyaDaHlyrB88yVf9cI07YnfHdIQ_wl_eDxuHfVzQ4r1E; AEC=AQTF6Hz-oHcLmXdXo633JulD96B_JLKGsZOpJOXLgeH8H-9OX5sGme_yNHg; S=billing-ui-v3=_viNIp2S9pp-yUjBmuJ7sVdVi6m1dNc_:billing-ui-v3-efe=_viNIp2S9pp-yUjBmuJ7sVdVi6m1dNc_; OTZ=7562390_72_76_104100_72_446760',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-origin',
+    # Requests doesn't support trailers
+    # 'TE': 'trailers',
+},
+{
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-CA,en-US;q=0.7,en;q=0.3',
+    # 'Accept-Encoding': 'gzip, deflate, br, zstd',
+    'DNT': '1',
+    'Sec-GPC': '1',
+    'Connection': 'keep-alive',
+    'Referer': 'https://trends.google.com/trends/explore?geo=CA&q=Stellaris&hl=en-US',
+    # 'Cookie': 'AEC=AQTF6HxR7o5rzGjIz-Ck4BVHLO-uEcs-eGH9bv49A0G2xyapi0IAdHxYuQ; NID=514=HsEOZN7tp9rWsZoPJJe21r08gR5BHSV5E5g_hCdS2MaySrUuNhrSvF833hHFxgSEiqrHgzK5931VWg1dx28i9lpcANK0okYE5Uk4127rLld_4dzlmmPFns6xP7eTNILeHByEydjEiVCoYyITKU0I_f3pN5FIBkufOTCRIPrhHkpAaad2Vmi-JKMFG2QVcuyv2cqKGG5NqNf3RTfNCiF8lRSjByj1nto0xrT_mjb_lnWmOrFHjABb; SID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HVL_C_sob1Fmt9i59nnOlP0wACgYKATkSAQASFQHGX2MiWqgA7Z7E-_QvhYXUk-rZLhoVAUF8yKrwSOzfJhdmgeJioGFwMazZ0076; __Secure-1PSID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HV9tyZSMGcq9kuuC3Szsb_dQACgYKAZESAQASFQHGX2MiWNwMQDi_YZln11Ng5SGjyhoVAUF8yKqbhuq6R5RqB8vEwDKGhmX70076; __Secure-3PSID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HVMZ4z_Z8AlsXqJ1a6DJI1MwACgYKAc0SAQASFQHGX2MicErOjdrV36A1Dr5qm_FuUhoVAUF8yKp2QhxtuWx1Dq1nGIpRGahK0076; HSID=Av-I2PIR1p9PjkfWh; SSID=ALNkJH5e-3BpGtBvn; APISID=KV5SY8kcK60ceRBx/ARexUwMDlXAi_O6fv; SAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; __Secure-1PAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; __Secure-3PAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; SIDCC=AKEyXzWMkofwmljmr2sKl2dLQ_MLiFOJGvluPriQrH6neWERQ1SkilV8xPT6ugtCagpebdGy4w; __Secure-1PSIDCC=AKEyXzXA5vdGohFIxpYx2cnDLGIqk3KpdziTafMFJ1nqALDjagLkBzLEa2g0Y34fTMfSUQXg; __Secure-3PSIDCC=AKEyXzWEhcr8R2UWgvoeYnYU1SQy2mCOW2YZXL3DaYjIKwZXNSNUv5Jz8FKnuQxNmZmp4d0L; SEARCH_SAMESITE=CgQIlZsB; __Secure-ENID=19.SE=IW7dk5ouCgn8Pk-FKEyB0E6f7PF90MXSkpERiTt4us_U7bgKtmOnv0eFEeLtgUQPR_9BBIqVRfdAiuteEsJcAZuSIVCLiAVo28MnhIPc_obHQrs9ySwna3AXgIcdkLOhpEDZ0M2H5deKQW4sQmphPIuVFDdOJK1Cg8FC40ed24Z_aPu3ngES6QJfK0CPLXWg6wZJqphPk-TahpCCOsmweK84IUUkPcjvLMKRttElrHskHahBW99Bn6d6RGKOd5pVfi9mE_8B7RfOI80; OTZ=7562426_72_76_104100_72_446760; __Secure-1PSIDTS=sidts-CjEBLwcBXP3QzoZiVtN1h3bG423i3ytIH10uqFJFzmnEzZvJzKar5Pg0ZFbMSQg35yLcEAA; __Secure-3PSIDTS=sidts-CjEBLwcBXP3QzoZiVtN1h3bG423i3ytIH10uqFJFzmnEzZvJzKar5Pg0ZFbMSQg35yLcEAA',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-origin',
+    # Requests doesn't support trailers
+    # 'TE': 'trailers',
+},
+{
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-CA,en-US;q=0.7,en;q=0.3',
+    # 'Accept-Encoding': 'gzip, deflate, br, zstd',
+    'DNT': '1',
+    'Sec-GPC': '1',
+    'Connection': 'keep-alive',
+    'Referer': 'https://trends.google.com/trends/explore?geo=CA&q=Minecraft&hl=en-US',
+    # 'Cookie': 'AEC=AQTF6HxR7o5rzGjIz-Ck4BVHLO-uEcs-eGH9bv49A0G2xyapi0IAdHxYuQ; NID=514=HsEOZN7tp9rWsZoPJJe21r08gR5BHSV5E5g_hCdS2MaySrUuNhrSvF833hHFxgSEiqrHgzK5931VWg1dx28i9lpcANK0okYE5Uk4127rLld_4dzlmmPFns6xP7eTNILeHByEydjEiVCoYyITKU0I_f3pN5FIBkufOTCRIPrhHkpAaad2Vmi-JKMFG2QVcuyv2cqKGG5NqNf3RTfNCiF8lRSjByj1nto0xrT_mjb_lnWmOrFHjABb; SID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HVL_C_sob1Fmt9i59nnOlP0wACgYKATkSAQASFQHGX2MiWqgA7Z7E-_QvhYXUk-rZLhoVAUF8yKrwSOzfJhdmgeJioGFwMazZ0076; __Secure-1PSID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HV9tyZSMGcq9kuuC3Szsb_dQACgYKAZESAQASFQHGX2MiWNwMQDi_YZln11Ng5SGjyhoVAUF8yKqbhuq6R5RqB8vEwDKGhmX70076; __Secure-3PSID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HVMZ4z_Z8AlsXqJ1a6DJI1MwACgYKAc0SAQASFQHGX2MicErOjdrV36A1Dr5qm_FuUhoVAUF8yKp2QhxtuWx1Dq1nGIpRGahK0076; HSID=Av-I2PIR1p9PjkfWh; SSID=ALNkJH5e-3BpGtBvn; APISID=KV5SY8kcK60ceRBx/ARexUwMDlXAi_O6fv; SAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; __Secure-1PAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; __Secure-3PAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; SIDCC=AKEyXzW0g2DrJ9P3bCg-fdVtyD25i9dMvIoZy1IjR-0vw27riY440vGjvjB5_4fgJZnXWgBcaA; __Secure-1PSIDCC=AKEyXzVIqAt9VeJYJRb77HsW-Rpv82jVp-1z4XzygfU-3IKmx74xd2rFfXh0pGNajsD6L8vs; __Secure-3PSIDCC=AKEyXzUVmdYJL3lO26yhrKmSAu3JTo0FJMUQSqbjCV7NThgxJ9DRAWbAtenSYiE0c9hXjWwi; SEARCH_SAMESITE=CgQIlZsB; __Secure-ENID=19.SE=IW7dk5ouCgn8Pk-FKEyB0E6f7PF90MXSkpERiTt4us_U7bgKtmOnv0eFEeLtgUQPR_9BBIqVRfdAiuteEsJcAZuSIVCLiAVo28MnhIPc_obHQrs9ySwna3AXgIcdkLOhpEDZ0M2H5deKQW4sQmphPIuVFDdOJK1Cg8FC40ed24Z_aPu3ngES6QJfK0CPLXWg6wZJqphPk-TahpCCOsmweK84IUUkPcjvLMKRttElrHskHahBW99Bn6d6RGKOd5pVfi9mE_8B7RfOI80; OTZ=7562426_72_76_104100_72_446760; __Secure-1PSIDTS=sidts-CjEBLwcBXP3QzoZiVtN1h3bG423i3ytIH10uqFJFzmnEzZvJzKar5Pg0ZFbMSQg35yLcEAA; __Secure-3PSIDTS=sidts-CjEBLwcBXP3QzoZiVtN1h3bG423i3ytIH10uqFJFzmnEzZvJzKar5Pg0ZFbMSQg35yLcEAA',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-origin',
+    # Requests doesn't support trailers
+    # 'TE': 'trailers',
+},
+{
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-CA,en-US;q=0.7,en;q=0.3',
+    # 'Accept-Encoding': 'gzip, deflate, br, zstd',
+    'DNT': '1',
+    'Sec-GPC': '1',
+    'Connection': 'keep-alive',
+    'Referer': 'https://trends.google.com/trends/explore?q=^%^2Fg^%^2F11fszn8rp_&date=now^%^201-d&geo=CA&hl=en',
+    # 'Cookie': 'AEC=AQTF6HxR7o5rzGjIz-Ck4BVHLO-uEcs-eGH9bv49A0G2xyapi0IAdHxYuQ; NID=514=HsEOZN7tp9rWsZoPJJe21r08gR5BHSV5E5g_hCdS2MaySrUuNhrSvF833hHFxgSEiqrHgzK5931VWg1dx28i9lpcANK0okYE5Uk4127rLld_4dzlmmPFns6xP7eTNILeHByEydjEiVCoYyITKU0I_f3pN5FIBkufOTCRIPrhHkpAaad2Vmi-JKMFG2QVcuyv2cqKGG5NqNf3RTfNCiF8lRSjByj1nto0xrT_mjb_lnWmOrFHjABb; SID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HVL_C_sob1Fmt9i59nnOlP0wACgYKATkSAQASFQHGX2MiWqgA7Z7E-_QvhYXUk-rZLhoVAUF8yKrwSOzfJhdmgeJioGFwMazZ0076; __Secure-1PSID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HV9tyZSMGcq9kuuC3Szsb_dQACgYKAZESAQASFQHGX2MiWNwMQDi_YZln11Ng5SGjyhoVAUF8yKqbhuq6R5RqB8vEwDKGhmX70076; __Secure-3PSID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HVMZ4z_Z8AlsXqJ1a6DJI1MwACgYKAc0SAQASFQHGX2MicErOjdrV36A1Dr5qm_FuUhoVAUF8yKp2QhxtuWx1Dq1nGIpRGahK0076; HSID=Av-I2PIR1p9PjkfWh; SSID=ALNkJH5e-3BpGtBvn; APISID=KV5SY8kcK60ceRBx/ARexUwMDlXAi_O6fv; SAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; __Secure-1PAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; __Secure-3PAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; SIDCC=AKEyXzXGTA657bAf3AlniraDm03RyGbuuHwDGPNsxsAWzK5VS1M1Cy3wZTxUWU6C7AQyjoEolQ; __Secure-1PSIDCC=AKEyXzUOD1sGwJtFuX8llNWaIidwpNlOGtUthWiXFtmjJimKTuPwRP6e2LX5DvvnETbeAhO9; __Secure-3PSIDCC=AKEyXzVL-JfmXvwkW5vsTxBsDA6Om1NYTYpPZnZyxordT2e3_qzYkvKwBGMePhCMFVtYfznf; SEARCH_SAMESITE=CgQIlZsB; __Secure-ENID=19.SE=IW7dk5ouCgn8Pk-FKEyB0E6f7PF90MXSkpERiTt4us_U7bgKtmOnv0eFEeLtgUQPR_9BBIqVRfdAiuteEsJcAZuSIVCLiAVo28MnhIPc_obHQrs9ySwna3AXgIcdkLOhpEDZ0M2H5deKQW4sQmphPIuVFDdOJK1Cg8FC40ed24Z_aPu3ngES6QJfK0CPLXWg6wZJqphPk-TahpCCOsmweK84IUUkPcjvLMKRttElrHskHahBW99Bn6d6RGKOd5pVfi9mE_8B7RfOI80; OTZ=7562426_72_76_104100_72_446760; __Secure-1PSIDTS=sidts-CjEBLwcBXP3QzoZiVtN1h3bG423i3ytIH10uqFJFzmnEzZvJzKar5Pg0ZFbMSQg35yLcEAA; __Secure-3PSIDTS=sidts-CjEBLwcBXP3QzoZiVtN1h3bG423i3ytIH10uqFJFzmnEzZvJzKar5Pg0ZFbMSQg35yLcEAA',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-origin',
+    # Requests doesn't support trailers
+    # 'TE': 'trailers',
+},
+{
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-CA,en-US;q=0.7,en;q=0.3',
+    # 'Accept-Encoding': 'gzip, deflate, br, zstd',
+    'DNT': '1',
+    'Sec-GPC': '1',
+    'Connection': 'keep-alive',
+    'Referer': 'https://trends.google.com/trends/explore?date=now^%^201-d&geo=CA&q=^%^2Fg^%^2F11ksnq4w1f&hl=en',
+    # 'Cookie': 'AEC=AQTF6HxR7o5rzGjIz-Ck4BVHLO-uEcs-eGH9bv49A0G2xyapi0IAdHxYuQ; NID=514=HsEOZN7tp9rWsZoPJJe21r08gR5BHSV5E5g_hCdS2MaySrUuNhrSvF833hHFxgSEiqrHgzK5931VWg1dx28i9lpcANK0okYE5Uk4127rLld_4dzlmmPFns6xP7eTNILeHByEydjEiVCoYyITKU0I_f3pN5FIBkufOTCRIPrhHkpAaad2Vmi-JKMFG2QVcuyv2cqKGG5NqNf3RTfNCiF8lRSjByj1nto0xrT_mjb_lnWmOrFHjABb; SID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HVL_C_sob1Fmt9i59nnOlP0wACgYKATkSAQASFQHGX2MiWqgA7Z7E-_QvhYXUk-rZLhoVAUF8yKrwSOzfJhdmgeJioGFwMazZ0076; __Secure-1PSID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HV9tyZSMGcq9kuuC3Szsb_dQACgYKAZESAQASFQHGX2MiWNwMQDi_YZln11Ng5SGjyhoVAUF8yKqbhuq6R5RqB8vEwDKGhmX70076; __Secure-3PSID=g.a000jwj-nhh-US5vww_cv3RWvhYvF8KZaelmgl_gg0qxFYWwP2HVMZ4z_Z8AlsXqJ1a6DJI1MwACgYKAc0SAQASFQHGX2MicErOjdrV36A1Dr5qm_FuUhoVAUF8yKp2QhxtuWx1Dq1nGIpRGahK0076; HSID=Av-I2PIR1p9PjkfWh; SSID=ALNkJH5e-3BpGtBvn; APISID=KV5SY8kcK60ceRBx/ARexUwMDlXAi_O6fv; SAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; __Secure-1PAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; __Secure-3PAPISID=3ri8FcW_wW4X_8Rr/A2ZXBwYuPQuc_-2nU; SIDCC=AKEyXzXIivyVitXPb-MuBJvoUj27CrZzrlbuVonfBqzrfXCmFBIcb7BvT5y69AXwmyQpB9zFlw; __Secure-1PSIDCC=AKEyXzVAVTKywlzt0e99IRO7HxOP-25ZB3wUw1_7CjFualF5m-tsVOEICStiWM60OeMzjSES; __Secure-3PSIDCC=AKEyXzUm_Bfpc5H56g5jZWtDRcNuBZKUCXxfDpNhhlyHCJV5s4YKYy4aMfM2SobyQ_VcLJ6K; SEARCH_SAMESITE=CgQIlZsB; __Secure-ENID=19.SE=IW7dk5ouCgn8Pk-FKEyB0E6f7PF90MXSkpERiTt4us_U7bgKtmOnv0eFEeLtgUQPR_9BBIqVRfdAiuteEsJcAZuSIVCLiAVo28MnhIPc_obHQrs9ySwna3AXgIcdkLOhpEDZ0M2H5deKQW4sQmphPIuVFDdOJK1Cg8FC40ed24Z_aPu3ngES6QJfK0CPLXWg6wZJqphPk-TahpCCOsmweK84IUUkPcjvLMKRttElrHskHahBW99Bn6d6RGKOd5pVfi9mE_8B7RfOI80; OTZ=7562426_72_76_104100_72_446760; __Secure-1PSIDTS=sidts-CjEBLwcBXP3QzoZiVtN1h3bG423i3ytIH10uqFJFzmnEzZvJzKar5Pg0ZFbMSQg35yLcEAA; __Secure-3PSIDTS=sidts-CjEBLwcBXP3QzoZiVtN1h3bG423i3ytIH10uqFJFzmnEzZvJzKar5Pg0ZFbMSQg35yLcEAA',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-origin',
+    # Requests doesn't support trailers
+    # 'TE': 'trailers',
+}
+]
+
+
+requests_args = {
+    'headers': random.choice(headerslist),
+    'verify': False
+}
+
 proxies = [ # gotten from webshare
     "http://38.154.227.167:5868",
     "http://185.199.229.156:7492",
@@ -43,15 +134,21 @@ proxies = [ # gotten from webshare
     "http://45.94.47.66:8110",
 ]
 
+pytrends = TrendReq(hl='en-US', tz=360, timeout=(10,25), proxies=['http://vhlqcuxl-rotate:z1j31e1386sb@p.webshare.io:80'], retries=2, backoff_factor=0.1, requests_args=requests_args)
+
 file = open("games.json", encoding = "utf8");
 data = json.load(file);
 
 popularity = [];
+popNO = [];
 prices = [];
+pricesNO = [];
 reviewRatio = [];
+reviewRatioNO = [];
 positiveReviewsArr = [];
 pricesPopularity = [[prices], [popularity]];
 googlePopularity = [];
+googlePopularityNO = [];
 
 monthsData = {"Jan": [0, 0], "Feb": [0, 0], "Mar": [0, 0], "Apr": [0, 0], "May": [0, 0], "Jun": [0, 0], "Jul": [0, 0], "Aug": [0, 0], "Sep": [0, 0], "Oct": [0, 0], "Nov": [0, 0], "Dec": [0, 0]};
 monthsAverage = {"Jan": 0, "Feb": 0, "Mar": 0, "Apr": 0, "May": 0, "Jun": 0, "Jul": 0, "Aug": 0, "Sep": 0, "Oct": 0, "Nov": 0, "Dec": 0};
@@ -81,18 +178,39 @@ def IQR_outliers(data):
     upper_range = Q3 + (1.5 * IQR)
     return [d for d in data if lower_range <= d <= upper_range]
 
-def IQR_outliers_remove_all(popdata):
-    sorted(popdata)
-    Q1,Q3 = np.percentile(popdata , [25,75])
+def IQR_determine(data):
+    [d for d in data if not d == -1]
+    sorted(data)
+    Q1,Q3 = np.percentile(data , [25,75])
     IQR = Q3 - Q1
-    lower_range = Q1 - (1.5 * IQR)
-    upper_range = Q3 + (1.5 * IQR)
-    for i, v in enumerate(popdata):
+    return (Q1 - (1.5 * IQR)), (Q3 + (1.5 * IQR))
+
+def IQR_outliers_remove_all(popdata, pricedata, reviewdata, googledata):
+    indexToRemove = []
+    lower_range, upper_range = IQR_determine(popdata)
+    [indexToRemove.append(i) for i, v in enumerate(popdata) if not lower_range <= v <= upper_range and not i in indexToRemove]
+    lower_range, upper_range = IQR_determine(pricedata)
+    [indexToRemove.append(i) for i, v in enumerate(pricedata) if not lower_range <= v <= upper_range and not i in indexToRemove]
+    lower_range, upper_range = IQR_determine(reviewdata)
+    [indexToRemove.append(i) for i, v in enumerate(reviewdata) if not lower_range <= v <= upper_range and not i in indexToRemove]
+    lower_range, upper_range = IQR_determine(googledata)
+    [indexToRemove.append(i) for i, v in enumerate(googledata) if not lower_range <= v <= upper_range or v == -1 and not i in indexToRemove]
+    '''for i, v in enumerate(popdata):
         if not lower_range <= v <= upper_range:
-            del popdata[i]
-            del prices[i]
-            del reviewRatio[i]
-    return popdata
+            popdata.pop(i)
+            prices.pop(i)
+            reviewRatio.pop(i)
+            googlePopularity.pop(i)
+        if v > 5000:
+            popdata.pop(i)
+            prices.pop(i)
+            reviewRatio.pop(i)
+            googlePopularity.pop(i)'''
+    popNO = [d for i, d in enumerate(popdata) if not i in indexToRemove]
+    pricesNO = [d for i, d in enumerate(pricedata) if not i in indexToRemove]
+    reviewRatioNO = [d for i, d in enumerate(reviewdata) if not i in indexToRemove]
+    googlePopularityNO = [d for i, d in enumerate(googledata) if not i in indexToRemove]
+    return popNO, pricesNO, reviewRatioNO, googlePopularityNO
 
 '''
 def is_outlier(points, thresh=3.5):
@@ -129,7 +247,10 @@ def is_outlier(points, thresh=3.5):
     return modified_z_score > thresh
 '''
 
+scrapeTrends = False;
+kw_list = []
 count = 0;
+names = []
 
 for i in data:
     name = data[i]["name"];
@@ -148,6 +269,30 @@ for i in data:
             monthsData[releaseDate.split(" ")[0]][0] += 1;
             monthsData[releaseDate.split(" ")[0]][1] += peakConcurrent;
             count += 1;
+
+            fname = name.encode('cp1252', 'ignore').decode('utf-8', 'ignore')
+
+            kw_list.clear()
+            kw_list.append(fname)
+
+            names.append(fname)
+
+
+            if scrapeTrends:
+                try:
+
+                    if (not fname in open('dataframe.csv', 'rb').read().decode('utf-8', 'ignore')):
+                        pytrends.build_payload(kw_list, cat=41, timeframe='today 5-y', geo='', gprop='')
+                        f = open('dataframe.csv', 'a', encoding='utf-8')
+                        pytrends.interest_over_time().to_csv(f)
+                        f.close()
+                        print(fname + " has been added: #" + str(count))
+                    else:
+                        print(fname + " already exists in the dataframe: #" + str(count))
+
+                except Exception as e:
+                    print("Error: " + str(e))
+                    continue
 
             realresult = True;
             while not realresult:
@@ -197,16 +342,77 @@ for i in data:
                     pass
             #googlePopularity.append(resultg)
 
-fs = open('currentlyHaveScraped.txt', 'r')
-for i in fs:
-    if (i.startswith('About')):
-        try:
-            googlePopularity.append(int(i.split(' ')[1].replace('.','')))
-        except ValueError:
-            pass
+trends_result_dict = {}
+trends_result_numerical_dict = {};
+names_no_rm = names.copy();
 
-with open('googlepopularity.json', 'w') as f:
-    json.dump(googlePopularity, f)
+with open('dataframe.csv', 'r') as f:
+    lines = f.readlines()
+    tempName = "";
+    for i in lines:
+        isplit = i.split(',')
+        if i.startswith('date'):
+            if not isplit[1] in trends_result_dict and isplit[1] in names:
+                trends_result_dict[isplit[1]] = []; # empty array, key is name of the game. array will be filled with the trends of the game which will be averaged later
+                tempName = isplit[1];
+                names.pop(names.index(isplit[1]))
+            else:
+                print("key already exists")
+                tempName = "har har har har har"
+        elif i.startswith('2'):
+            #if not isplit[1] == '0' and not tempName == 'har har har har har':
+            if not tempName == 'har har har har har':
+                trends_result_dict[tempName].append(int(isplit[1]))
+
+print(len(names_no_rm))
+
+for i, v in trends_result_dict.items():
+    trends_result_dict[i] = sum(v) / len(v);
+    for j, w in enumerate(names_no_rm):
+        if w == i:
+            trends_result_numerical_dict[j] = trends_result_dict[i];
+
+trends_result_numerical_dict_temp = {key:trends_result_numerical_dict[key] for key in sorted(trends_result_numerical_dict.keys())}
+trends_result_numerical_dict = trends_result_numerical_dict_temp.copy();
+#trends_result_numerical_dict_temp = trends_result_numerical_dict.copy();
+
+tcount = 0;
+for i, v in trends_result_numerical_dict.items():
+    print(i, tcount)
+    if i - tcount > 1:
+        for j in range(i - tcount):
+            trends_result_numerical_dict_temp[tcount + j + 1] = -1;
+    tcount = i;
+
+trends_result_numerical_dict = {key:trends_result_numerical_dict_temp[key] for key in sorted(trends_result_numerical_dict_temp.keys())}
+#trends_result_numerical_dict = trends_result_numerical_dict_temp.copy();
+
+print(trends_result_numerical_dict, len(trends_result_numerical_dict))
+
+
+#print(trends_result_dict, len(trends_result_dict))
+print(names)
+tempcc = -1;
+for i, v in trends_result_numerical_dict.items():
+    print(i)
+    if i-tempcc > 1:
+        print("skipped " + str(i))
+    tempcc = i;
+    googlePopularity.append(v)
+
+#fs = open('currentlyHaveScraped.txt', 'r')
+#for i in fs:
+#    if (i.startswith('About')):
+#        try:
+#            googlePopularity.append(int(i.split(' ')[1].replace('.','')))
+#        except ValueError:
+#            pass
+
+#with open('googlepopularity.json', 'w') as f:
+#    json.dump(googlePopularity, f)
+
+#fsj = open('googlepopularity.json', 'r')
+#googlePopularity = json.load(fsj)
 
 print(len(googlePopularity))
 print(count);
@@ -227,24 +433,27 @@ for i, v in enumerate(popularity):
 #cf = np.polyfit(prices, popularity, 1);
 #poly1d = np.poly1d(cf);
 
-pop = IQR_outliers_remove_all(popularity);
+popNO, pricesNO, reviewRatioNO, googlePopularityNO = IQR_outliers_remove_all(popularity, prices, reviewRatio, googlePopularity);
+#popNO, pricesNO, reviewRatioNO, googlePopularityNO = popularity, prices, reviewRatio, googlePopularity
 
 vdict = []
-for i in range(len(pop)):
-    vdict.append({'r': reviewRatio[i], 'p': prices[i]})
+for i in range(len(popNO)):
+    vdict.append({'r': pricesNO[i], 'p': googlePopularityNO[i]})
 vec = DictVectorizer()
 X = vec.fit_transform(vdict)
-y = pop;
+y = popNO;
 
 clf = linear_model.LinearRegression()
 clf.fit(X, y)
 print(clf.coef_, clf.intercept_)
 
 # create a plane of regression using the r and p values
-r = np.linspace(min(reviewRatio), max(reviewRatio), 100)
-p = np.linspace(min(prices), max(prices), 100)
+r = np.linspace(min(pricesNO), max(pricesNO), 100)
+p = np.linspace(min(googlePopularityNO), max(googlePopularityNO), 100)
 R, P = np.meshgrid(r, p)
 Z = clf.coef_[0] * R + clf.coef_[1] * P + clf.intercept_
+
+print(clf.score(X, y))
 
 fig = plt.figure()
 fig.set_figwidth(40)
@@ -253,7 +462,7 @@ ax = plt.axes(projection='3d')
 ax.set_xlabel('r', fontsize=12, color='green')
 ax.set_ylabel('p', fontsize=12, color='green')
 ax.set_zlabel('P', fontsize=12, color='green')
-ax.scatter3D(reviewRatio, prices, pop, color='green')
+ax.scatter3D(pricesNO, googlePopularityNO, popNO, color='green')
 ax.plot_surface(R, P, Z, alpha=0.5)
 plt.title("Plot of data points")
 plt.show()
