@@ -179,7 +179,7 @@ def IQR_outliers(data):
     return [d for d in data if lower_range <= d <= upper_range]
 
 def IQR_determine(data):
-    [d for d in data if not d == -1]
+    [d for d in data if not d == -1 and not d == 100.0]
     sorted(data)
     Q1,Q3 = np.percentile(data , [25,75])
     IQR = Q3 - Q1
@@ -194,7 +194,7 @@ def IQR_outliers_remove_all(popdata, pricedata, reviewdata, googledata):
     lower_range, upper_range = IQR_determine(reviewdata)
     [indexToRemove.append(i) for i, v in enumerate(reviewdata) if not lower_range <= v <= upper_range and not i in indexToRemove]
     lower_range, upper_range = IQR_determine(googledata)
-    [indexToRemove.append(i) for i, v in enumerate(googledata) if not lower_range <= v <= upper_range or v == -1 and not i in indexToRemove]
+    [indexToRemove.append(i) for i, v in enumerate(googledata) if not lower_range <= v <= upper_range or v == -1 or v == 100.0 and not i in indexToRemove]
     '''for i, v in enumerate(popdata):
         if not lower_range <= v <= upper_range:
             popdata.pop(i)
@@ -342,6 +342,16 @@ for i in data:
                     pass
             #googlePopularity.append(resultg)
 
+
+
+
+
+
+
+
+
+
+
 trends_result_dict = {}
 trends_result_numerical_dict = {};
 names_no_rm = names.copy();
@@ -349,6 +359,7 @@ names_no_rm = names.copy();
 with open('dataframe.csv', 'r') as f:
     lines = f.readlines()
     tempName = "";
+    #zeros_ended = False;
     for i in lines:
         isplit = i.split(',')
         if i.startswith('date'):
@@ -356,18 +367,30 @@ with open('dataframe.csv', 'r') as f:
                 trends_result_dict[isplit[1]] = []; # empty array, key is name of the game. array will be filled with the trends of the game which will be averaged later
                 tempName = isplit[1];
                 names.pop(names.index(isplit[1]))
+     #           zeros_ended = False;
             else:
-                print("key already exists")
+                #print("key already exists")
                 tempName = "har har har har har"
         elif i.startswith('2'):
-            #if not isplit[1] == '0' and not tempName == 'har har har har har':
-            if not tempName == 'har har har har har':
+           # if zeros_ended == False:
+            #    if not isplit[1] == '0':
+             #       zeros_ended = True;
+            #elif zeros_ended == True:
+            if not isplit[1] == '0' and not tempName == 'har har har har har':
+            #if not tempName == 'har har har har har':
                 trends_result_dict[tempName].append(int(isplit[1]))
 
-print(len(names_no_rm))
+#print(len(names_no_rm))
+
+#zero_threshold = 0.25;
 
 for i, v in trends_result_dict.items():
-    trends_result_dict[i] = sum(v) / len(v);
+    #if len([x for x in trends_result_dict[i] if x != 0]) >= zero_threshold * len(trends_result_dict[i]):
+    trends_result_dict[i] = (sum(v) / len(v)) if len(v) > 0 else -1;
+        # get median of the array at index i and store it in the dictionary
+        #trends_result_dict[i] = np.median(v);
+    #else:
+    #trends_result_dict[i] = -1;
     for j, w in enumerate(names_no_rm):
         if w == i:
             trends_result_numerical_dict[j] = trends_result_dict[i];
@@ -378,27 +401,35 @@ trends_result_numerical_dict = trends_result_numerical_dict_temp.copy();
 
 tcount = 0;
 for i, v in trends_result_numerical_dict.items():
-    print(i, tcount)
+    #print(i, tcount)
     if i - tcount > 1:
-        for j in range(i - tcount):
+        for j in range(i - tcount - 1):
             trends_result_numerical_dict_temp[tcount + j + 1] = -1;
     tcount = i;
 
 trends_result_numerical_dict = {key:trends_result_numerical_dict_temp[key] for key in sorted(trends_result_numerical_dict_temp.keys())}
 #trends_result_numerical_dict = trends_result_numerical_dict_temp.copy();
 
-print(trends_result_numerical_dict, len(trends_result_numerical_dict))
+#print(trends_result_numerical_dict, len(trends_result_numerical_dict))
 
 
 #print(trends_result_dict, len(trends_result_dict))
-print(names)
-tempcc = -1;
+#print(names)
+#tempcc = -1;
 for i, v in trends_result_numerical_dict.items():
-    print(i)
-    if i-tempcc > 1:
-        print("skipped " + str(i))
-    tempcc = i;
+    #print(i)
+    #if i-tempcc > 1:
+        #print("skipped " + str(i))
+    #tempcc = i;
     googlePopularity.append(v)
+
+
+
+
+
+
+
+
 
 #fs = open('currentlyHaveScraped.txt', 'r')
 #for i in fs:
@@ -414,8 +445,8 @@ for i, v in trends_result_numerical_dict.items():
 #fsj = open('googlepopularity.json', 'r')
 #googlePopularity = json.load(fsj)
 
-print(len(googlePopularity))
-print(count);
+#print(len(googlePopularity))
+#print(count);
 
 #for i in prices:
 #    if pricesPopularity[i]:
@@ -433,12 +464,14 @@ for i, v in enumerate(popularity):
 #cf = np.polyfit(prices, popularity, 1);
 #poly1d = np.poly1d(cf);
 
+print(googlePopularity)
+
 popNO, pricesNO, reviewRatioNO, googlePopularityNO = IQR_outliers_remove_all(popularity, prices, reviewRatio, googlePopularity);
 #popNO, pricesNO, reviewRatioNO, googlePopularityNO = popularity, prices, reviewRatio, googlePopularity
 
 vdict = []
 for i in range(len(popNO)):
-    vdict.append({'r': pricesNO[i], 'p': googlePopularityNO[i]})
+    vdict.append({'r': reviewRatioNO[i], 'w': googlePopularityNO[i], 'p': pricesNO[i]})
 vec = DictVectorizer()
 X = vec.fit_transform(vdict)
 y = popNO;
@@ -448,10 +481,11 @@ clf.fit(X, y)
 print(clf.coef_, clf.intercept_)
 
 # create a plane of regression using the r and p values
-r = np.linspace(min(pricesNO), max(pricesNO), 100)
-p = np.linspace(min(googlePopularityNO), max(googlePopularityNO), 100)
-R, P = np.meshgrid(r, p)
-Z = clf.coef_[0] * R + clf.coef_[1] * P + clf.intercept_
+r = np.linspace(min(reviewRatioNO), max(reviewRatioNO), 100)
+w = np.linspace(min(googlePopularityNO), max(googlePopularityNO), 100)
+p = np.linspace(min(pricesNO), max(pricesNO), 100)
+R, W, P = np.meshgrid(r, w, p, indexing='ij')
+Z = clf.coef_[0] * R + clf.coef_[1] * W + clf.coef_[2] * P + clf.intercept_
 
 print(clf.score(X, y))
 
@@ -460,14 +494,26 @@ fig.set_figwidth(40)
 fig.set_figheight(10)
 ax = plt.axes(projection='3d')
 ax.set_xlabel('r', fontsize=12, color='green')
-ax.set_ylabel('p', fontsize=12, color='green')
-ax.set_zlabel('P', fontsize=12, color='green')
-ax.scatter3D(pricesNO, googlePopularityNO, popNO, color='green')
-ax.plot_surface(R, P, Z, alpha=0.5)
+ax.set_ylabel('w', fontsize=12, color='green')
+ax.set_zlabel('pop', fontsize=12, color='green')
+img = ax.scatter3D(reviewRatioNO, googlePopularityNO, popNO, c=pricesNO, cmap=plt.hot())
+fig.colorbar(img)
+#ax.plot_surface(R, P, Z, alpha=0.5)
 plt.title("Plot of data points")
 plt.show()
 
+'''# scatter to demonstrate no correlation between bing scraper and popularity
+plt.scatter(googlePopularityNO, popNO, color = "k", s=3.5);
+plt.title("Number of Search Results on Bing and Peak Concurrent Players");
+plt.xlabel("Number of Search Results on Bing");
+plt.ylabel("Peak Concurrent Players");
+plt.show();'''
 
+plt.scatter(googlePopularityNO, popNO, color = "k", s=7.5);
+plt.title("Median of Trends on Google Trends and Peak Concurrent Players");
+plt.xlabel("Median of Trends on Google Trends");
+plt.ylabel("Peak Concurrent Players");
+plt.show();
 
 
 
