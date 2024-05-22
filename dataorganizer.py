@@ -16,8 +16,11 @@ import random;
 from requests.auth import HTTPProxyAuth
 from pytrends.request import TrendReq
 import pandas as pd;
-import warnings
-warnings.filterwarnings('ignore')
+from dateutil.parser import parse;
+from datetime import datetime;
+import csv;
+#import warnings
+#warnings.filterwarnings('ignore')
 #import argparse
 
 #parser = argparse.ArgumentParser(description='Get Google Count.')
@@ -134,7 +137,7 @@ proxies = [ # gotten from webshare
     "http://45.94.47.66:8110",
 ]
 
-pytrends = TrendReq(hl='en-US', tz=360, timeout=(10,25), proxies=['http://vhlqcuxl-rotate:z1j31e1386sb@p.webshare.io:80'], retries=2, backoff_factor=0.1, requests_args=requests_args)
+#pytrends = TrendReq(hl='en-US', tz=360, timeout=(10,25), proxies=['http://vhlqcuxl-rotate:z1j31e1386sb@p.webshare.io:80'], retries=2, backoff_factor=0.1, requests_args=requests_args)
 
 file = open("games.json", encoding = "utf8");
 data = json.load(file);
@@ -149,6 +152,8 @@ positiveReviewsArr = [];
 pricesPopularity = [[prices], [popularity]];
 googlePopularity = [];
 googlePopularityNO = [];
+releaseDates = [];
+releaseDatesNO = [];
 
 monthsData = {"Jan": [0, 0], "Feb": [0, 0], "Mar": [0, 0], "Apr": [0, 0], "May": [0, 0], "Jun": [0, 0], "Jul": [0, 0], "Aug": [0, 0], "Sep": [0, 0], "Oct": [0, 0], "Nov": [0, 0], "Dec": [0, 0]};
 monthsAverage = {"Jan": 0, "Feb": 0, "Mar": 0, "Apr": 0, "May": 0, "Jun": 0, "Jul": 0, "Aug": 0, "Sep": 0, "Oct": 0, "Nov": 0, "Dec": 0};
@@ -181,8 +186,9 @@ def IQR_outliers(data):
 def IQR_determine(data):
     [d for d in data if not d == -1 and not d == 100.0]
     sorted(data)
-    Q1,Q3 = np.percentile(data , [25,75])
+    Q1, Q2, Q3 = np.percentile(data , [25, 50, 75])
     IQR = Q3 - Q1
+    print(Q1, Q2, Q3)
     return (Q1 - (1.5 * IQR)), (Q3 + (1.5 * IQR))
 
 def IQR_outliers_remove_all(popdata, pricedata, reviewdata, googledata):
@@ -210,7 +216,8 @@ def IQR_outliers_remove_all(popdata, pricedata, reviewdata, googledata):
     pricesNO = [d for i, d in enumerate(pricedata) if not i in indexToRemove]
     reviewRatioNO = [d for i, d in enumerate(reviewdata) if not i in indexToRemove]
     googlePopularityNO = [d for i, d in enumerate(googledata) if not i in indexToRemove]
-    return popNO, pricesNO, reviewRatioNO, googlePopularityNO
+    #releaseDatesNO = [d for i, d in enumerate(releasedata) if not i in indexToRemove]
+    return popNO, pricesNO, reviewRatioNO, googlePopularityNO#, releaseDatesNO
 
 '''
 def is_outlier(points, thresh=3.5):
@@ -247,10 +254,14 @@ def is_outlier(points, thresh=3.5):
     return modified_z_score > thresh
 '''
 
+gameNames = [];
+
 scrapeTrends = False;
 kw_list = []
 count = 0;
 names = []
+
+print(len(data))
 
 for i in data:
     name = data[i]["name"];
@@ -268,6 +279,8 @@ for i in data:
             prices.append(price);
             monthsData[releaseDate.split(" ")[0]][0] += 1;
             monthsData[releaseDate.split(" ")[0]][1] += peakConcurrent;
+            releaseDates.append(releaseDate);
+            gameNames.append(name);
             count += 1;
 
             fname = name.encode('cp1252', 'ignore').decode('utf-8', 'ignore')
@@ -350,8 +363,6 @@ for i in data:
 
 
 
-
-
 trends_result_dict = {}
 trends_result_numerical_dict = {};
 names_no_rm = names.copy();
@@ -360,7 +371,9 @@ with open('dataframe.csv', 'r') as f:
     lines = f.readlines()
     tempName = "";
     #zeros_ended = False;
-    for i in lines:
+    date_started = False;
+    countdate = 0;
+    for k, i in enumerate(lines):
         isplit = i.split(',')
         if i.startswith('date'):
             if not isplit[1] in trends_result_dict and isplit[1] in names:
@@ -368,17 +381,23 @@ with open('dataframe.csv', 'r') as f:
                 tempName = isplit[1];
                 names.pop(names.index(isplit[1]))
      #           zeros_ended = False;
+                date_started = False;
+                countdate += 1;
             else:
                 #print("key already exists")
                 tempName = "har har har har har"
         elif i.startswith('2'):
+            if (date_started == False):
+                if (parse(isplit[0]) >= parse(releaseDates[countdate-1], fuzzy_with_tokens=True)[0]):
+                    date_started = True;
+            elif (date_started == True):
            # if zeros_ended == False:
             #    if not isplit[1] == '0':
              #       zeros_ended = True;
             #elif zeros_ended == True:
-            if not isplit[1] == '0' and not tempName == 'har har har har har':
-            #if not tempName == 'har har har har har':
-                trends_result_dict[tempName].append(int(isplit[1]))
+            #if not isplit[1] == '0' and not tempName == 'har har har har har':
+                if not tempName == 'har har har har har':
+                    trends_result_dict[tempName].append(int(isplit[1]))
 
 #print(len(names_no_rm))
 
@@ -388,7 +407,7 @@ for i, v in trends_result_dict.items():
     #if len([x for x in trends_result_dict[i] if x != 0]) >= zero_threshold * len(trends_result_dict[i]):
     trends_result_dict[i] = (sum(v) / len(v)) if len(v) > 0 else -1;
         # get median of the array at index i and store it in the dictionary
-        #trends_result_dict[i] = np.median(v);
+    #trends_result_dict[i] = np.median(v);
     #else:
     #trends_result_dict[i] = -1;
     for j, w in enumerate(names_no_rm):
@@ -425,6 +444,15 @@ for i, v in trends_result_numerical_dict.items():
 
 
 
+sampleDictArray = [];
+with open('sample.csv', 'w') as f:
+    fields = ['Name', 'Peak CCU', 'Price (USD)', 'Review Ratio', 'Web Exposure']
+    writer = csv.DictWriter(f, fieldnames=fields)
+    writer.writeheader()
+    for i in range(29):
+        randchoice = random.randint(0, len(popularity))
+        sampleDictArray.append({'Name': gameNames[randchoice], 'Peak CCU': popularity[randchoice], 'Price (USD)': prices[randchoice], 'Review Ratio': reviewRatio[randchoice], 'Web Exposure': googlePopularity[randchoice]})
+    writer.writerows(sampleDictArray)
 
 
 
@@ -469,6 +497,8 @@ print(googlePopularity)
 popNO, pricesNO, reviewRatioNO, googlePopularityNO = IQR_outliers_remove_all(popularity, prices, reviewRatio, googlePopularity);
 #popNO, pricesNO, reviewRatioNO, googlePopularityNO = popularity, prices, reviewRatio, googlePopularity
 
+print(len(popNO))
+
 vdict = []
 for i in range(len(popNO)):
     vdict.append({'r': reviewRatioNO[i], 'w': googlePopularityNO[i], 'p': pricesNO[i]})
@@ -484,8 +514,10 @@ print(clf.coef_, clf.intercept_)
 r = np.linspace(min(reviewRatioNO), max(reviewRatioNO), 100)
 w = np.linspace(min(googlePopularityNO), max(googlePopularityNO), 100)
 p = np.linspace(min(pricesNO), max(pricesNO), 100)
-R, W, P = np.meshgrid(r, w, p, indexing='ij')
-Z = clf.coef_[0] * R + clf.coef_[1] * W + clf.coef_[2] * P + clf.intercept_
+#R, W, P = np.meshgrid(w, p, r, indexing='ij')
+W, P = np.meshgrid(w, p)
+#Z = clf.coef_[0] * W + clf.coef_[1] * P + clf.coef_[2] * R + clf.intercept_
+Z2D = clf.coef_[0] * W + clf.coef_[1] * P + clf.intercept_
 
 print(clf.score(X, y))
 
@@ -496,25 +528,43 @@ ax = plt.axes(projection='3d')
 ax.set_xlabel('r', fontsize=12, color='green')
 ax.set_ylabel('w', fontsize=12, color='green')
 ax.set_zlabel('pop', fontsize=12, color='green')
-img = ax.scatter3D(reviewRatioNO, googlePopularityNO, popNO, c=pricesNO, cmap=plt.hot())
+img = ax.scatter3D(googlePopularityNO, pricesNO, popNO, c=reviewRatioNO, cmap=plt.hot())
 fig.colorbar(img)
-#ax.plot_surface(R, P, Z, alpha=0.5)
+ax.plot_surface(W, P, Z2D, alpha=0.5)
 plt.title("Plot of data points")
 plt.show()
 
-'''# scatter to demonstrate no correlation between bing scraper and popularity
-plt.scatter(googlePopularityNO, popNO, color = "k", s=3.5);
+
+slope, intercept, r_value, p_value, std_err = stats.linregress(googlePopularityNO, popNO);
+line = slope*np.array(googlePopularityNO)+intercept;
+
+#plt.plot(prices, popularity, "yo", prices, poly1d(prices), "--k");
+plt.plot(googlePopularityNO, line, "r", label = "y={:.2f}x+{:.2f}".format(slope, intercept));
+# scatter to demonstrate no correlation between bing scraper and popularity
+plt.scatter(googlePopularityNO, popNO, color = "k", s=7.5);
 plt.title("Number of Search Results on Bing and Peak Concurrent Players");
 plt.xlabel("Number of Search Results on Bing");
 plt.ylabel("Peak Concurrent Players");
-plt.show();'''
+plt.show();
 
 plt.scatter(googlePopularityNO, popNO, color = "k", s=7.5);
-plt.title("Median of Trends on Google Trends and Peak Concurrent Players");
-plt.xlabel("Median of Trends on Google Trends");
+plt.title("Mean of Web Exposure on Google Trends and Peak Concurrent Players");
+plt.xlabel("Mean of Web Exposure on Google Trends");
 plt.ylabel("Peak Concurrent Players");
 plt.show();
 
+
+slope, intercept, r_value, p_value, std_err = stats.linregress(pricesNO, popNO);
+line = slope*np.array(pricesNO)+intercept;
+
+#plt.plot(prices, popularity, "yo", prices, poly1d(prices), "--k");
+plt.plot(pricesNO, line, "r", label = "y={:.2f}x+{:.2f}".format(slope, intercept));
+
+plt.scatter(pricesNO, popNO, color = "k", s=7.5);
+plt.title("Price and Peak Concurrent Players");
+plt.xlabel("Price (USD)");
+plt.ylabel("Peak Concurrent Players");
+plt.show();
 
 
 
