@@ -188,7 +188,7 @@ def IQR_determine(data):
     sorted(data)
     Q1, Q2, Q3 = np.percentile(data , [25, 50, 75])
     IQR = Q3 - Q1
-    print(Q1, Q2, Q3)
+    print(Q1, Q2, Q3, IQR, Q1 - (1.5 * IQR), Q3 + (1.5 * IQR))
     return (Q1 - (1.5 * IQR)), (Q3 + (1.5 * IQR))
 
 def IQR_outliers_remove_all(popdata, pricedata, reviewdata, googledata):
@@ -443,7 +443,7 @@ for i, v in trends_result_numerical_dict.items():
     googlePopularity.append(v)
 
 
-
+'''
 sampleDictArray = [];
 with open('sample.csv', 'w') as f:
     fields = ['Name', 'Peak CCU', 'Price (USD)', 'Review Ratio', 'Web Exposure']
@@ -453,11 +453,9 @@ with open('sample.csv', 'w') as f:
         randchoice = random.randint(0, len(popularity))
         sampleDictArray.append({'Name': gameNames[randchoice], 'Peak CCU': popularity[randchoice], 'Price (USD)': prices[randchoice], 'Review Ratio': reviewRatio[randchoice], 'Web Exposure': googlePopularity[randchoice]})
     writer.writerows(sampleDictArray)
+'''
 
-
-
-
-
+print(googlePopularity[gameNames.index("Phasmophobia")])
 
 #fs = open('currentlyHaveScraped.txt', 'r')
 #for i in fs:
@@ -499,6 +497,16 @@ popNO, pricesNO, reviewRatioNO, googlePopularityNO = IQR_outliers_remove_all(pop
 
 print(len(popNO))
 
+data_csv_dict = [];
+with open('datacsv.csv', 'w') as f:
+    fields = ['Peak CCU', 'Price (USD)', 'Review Ratio', 'Web Exposure']
+    writer = csv.DictWriter(f, fieldnames=fields)
+    writer.writeheader();
+    for i in range(len(popNO)):
+        data_csv_dict.append({'Peak CCU': popNO[i], 'Price (USD)': pricesNO[i], 'Review Ratio': reviewRatioNO[i], 'Web Exposure': googlePopularityNO[i]});
+    writer.writerows(data_csv_dict);
+
+
 vdict = []
 for i in range(len(popNO)):
     vdict.append({'r': reviewRatioNO[i], 'w': googlePopularityNO[i], 'p': pricesNO[i]})
@@ -514,10 +522,15 @@ print(clf.coef_, clf.intercept_)
 r = np.linspace(min(reviewRatioNO), max(reviewRatioNO), 100)
 w = np.linspace(min(googlePopularityNO), max(googlePopularityNO), 100)
 p = np.linspace(min(pricesNO), max(pricesNO), 100)
-#R, W, P = np.meshgrid(w, p, r, indexing='ij')
-W, P = np.meshgrid(w, p)
-#Z = clf.coef_[0] * W + clf.coef_[1] * P + clf.coef_[2] * R + clf.intercept_
-Z2D = clf.coef_[0] * W + clf.coef_[1] * P + clf.intercept_
+R, W, P = np.meshgrid(w, p, r, indexing='ij')
+#W, P = np.meshgrid(w, p)
+Z = clf.coef_[0] * W + clf.coef_[1] * P + clf.coef_[2] * R + clf.intercept_
+#Z2D = clf.coef_[0] * W + clf.coef_[1] * P + clf.intercept_
+
+R_flat = R.flatten()
+W_flat = W.flatten()
+P_flat = P.flatten()
+Z_flat = Z.flatten()
 
 print(clf.score(X, y))
 
@@ -525,13 +538,16 @@ fig = plt.figure()
 fig.set_figwidth(40)
 fig.set_figheight(10)
 ax = plt.axes(projection='3d')
-ax.set_xlabel('r', fontsize=12, color='green')
-ax.set_ylabel('w', fontsize=12, color='green')
-ax.set_zlabel('pop', fontsize=12, color='green')
+ax.set_xlabel('Mean of Web Exposure on Google Trends', fontsize=12, color='green')
+ax.set_ylabel('Price (USD)', fontsize=12, color='green')
+ax.set_zlabel('Peak Concurrent Players', fontsize=12, color='green')
 img = ax.scatter3D(googlePopularityNO, pricesNO, popNO, c=reviewRatioNO, cmap=plt.hot())
-fig.colorbar(img)
-ax.plot_surface(W, P, Z2D, alpha=0.5)
-plt.title("Plot of data points")
+cbar = fig.colorbar(img)
+cbar.set_label("Ratio of Positive Reviews to Negative Reviews")
+#sc = ax.scatter3D(W_flat, P_flat, Z_flat, c=R_flat, cmap='hot', alpha=0.5, label='Regression Plane')
+plane = ax.plot_surface(W, P, Z, facecolors=plt.cm.hot(R/np.max(R)), alpha=0.5, rstride=100, cstride=100)
+#ax.plot_surface(W, P, R, Z2D, alpha=0.5)
+plt.title("3D Graph of Web Exposure, Price, Review Ratio, and Popularity")
 plt.show()
 
 
