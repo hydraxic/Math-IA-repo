@@ -495,6 +495,8 @@ print(googlePopularity)
 popNO, pricesNO, reviewRatioNO, googlePopularityNO = IQR_outliers_remove_all(popularity, prices, reviewRatio, googlePopularity);
 #popNO, pricesNO, reviewRatioNO, googlePopularityNO = popularity, prices, reviewRatio, googlePopularity
 
+print(np.mean(popNO))
+
 print(len(popNO))
 
 data_csv_dict = [];
@@ -518,19 +520,32 @@ clf = linear_model.LinearRegression()
 clf.fit(X, y)
 print(clf.coef_, clf.intercept_)
 
+prediction = clf.predict(X)
+residual = y - prediction;
+# print the sum of residuals squared
+print(np.sum(residual ** 2), " is the sum of residuals squared")
+
+# get total sum of squares
+tss = np.sum((y - np.mean(y)) ** 2)
+# get the r squared value
+print(tss, " is the total sum of squares")
+r_squared = 1 - (np.sum(residual ** 2) / tss)
+print(r_squared, " is the r squared value")
+
+
 # create a plane of regression using the r and p values
 r = np.linspace(min(reviewRatioNO), max(reviewRatioNO), 100)
 w = np.linspace(min(googlePopularityNO), max(googlePopularityNO), 100)
 p = np.linspace(min(pricesNO), max(pricesNO), 100)
-R, W, P = np.meshgrid(w, p, r, indexing='ij')
-#W, P = np.meshgrid(w, p)
-Z = clf.coef_[0] * W + clf.coef_[1] * P + clf.coef_[2] * R + clf.intercept_
-#Z2D = clf.coef_[0] * W + clf.coef_[1] * P + clf.intercept_
+#R, W, P = np.meshgrid(w, p, r, indexing='ij')
+R, P = np.meshgrid(r, p)
+#Z = clf.coef_[0] * W + clf.coef_[1] * P + clf.coef_[2] * R + clf.intercept_
+Z2D = clf.coef_[0] * R + clf.coef_[1] * P + clf.intercept_
 
-R_flat = R.flatten()
-W_flat = W.flatten()
-P_flat = P.flatten()
-Z_flat = Z.flatten()
+#R_flat = R.flatten()
+#W_flat = W.flatten()
+#P_flat = P.flatten()
+#Z_flat = Z.flatten()
 
 print(clf.score(X, y))
 
@@ -538,14 +553,15 @@ fig = plt.figure()
 fig.set_figwidth(40)
 fig.set_figheight(10)
 ax = plt.axes(projection='3d')
-ax.set_xlabel('Mean of Web Exposure on Google Trends', fontsize=12, color='green')
+ax.set_xlabel('Ratio of Positive Reviews to Negative Reviews', fontsize=12, color='green')
 ax.set_ylabel('Price (USD)', fontsize=12, color='green')
 ax.set_zlabel('Peak Concurrent Players', fontsize=12, color='green')
-img = ax.scatter3D(googlePopularityNO, pricesNO, popNO, c=reviewRatioNO, cmap=plt.hot())
+img = ax.scatter3D(reviewRatioNO, pricesNO, popNO, c=googlePopularityNO, cmap=plt.hot())
 cbar = fig.colorbar(img)
-cbar.set_label("Ratio of Positive Reviews to Negative Reviews")
+cbar.set_label("Mean of Web Exposure on Google Trends")
+ax.plot_surface(R, P, Z2D, alpha=0.5)
 #sc = ax.scatter3D(W_flat, P_flat, Z_flat, c=R_flat, cmap='hot', alpha=0.5, label='Regression Plane')
-plane = ax.plot_surface(W, P, Z, facecolors=plt.cm.hot(R/np.max(R)), alpha=0.5, rstride=100, cstride=100)
+#plane = ax.plot_surface(W, P, Z, facecolors=plt.cm.hot(R/np.max(R)), alpha=0.5, rstride=100, cstride=100)
 #ax.plot_surface(W, P, R, Z2D, alpha=0.5)
 plt.title("3D Graph of Web Exposure, Price, Review Ratio, and Popularity")
 plt.show()
