@@ -154,6 +154,9 @@ googlePopularity = [];
 googlePopularityNO = [];
 releaseDates = [];
 releaseDatesNO = [];
+namedataNO = [];
+estimatedOwners = [];
+estimatedOwnersNO = [];
 
 monthsData = {"Jan": [0, 0], "Feb": [0, 0], "Mar": [0, 0], "Apr": [0, 0], "May": [0, 0], "Jun": [0, 0], "Jul": [0, 0], "Aug": [0, 0], "Sep": [0, 0], "Oct": [0, 0], "Nov": [0, 0], "Dec": [0, 0]};
 monthsAverage = {"Jan": 0, "Feb": 0, "Mar": 0, "Apr": 0, "May": 0, "Jun": 0, "Jul": 0, "Aug": 0, "Sep": 0, "Oct": 0, "Nov": 0, "Dec": 0};
@@ -191,7 +194,7 @@ def IQR_determine(data):
     print(Q1, Q2, Q3, IQR, Q1 - (1.5 * IQR), Q3 + (1.5 * IQR))
     return (Q1 - (1.5 * IQR)), (Q3 + (1.5 * IQR))
 
-def IQR_outliers_remove_all(popdata, pricedata, reviewdata, googledata):
+def IQR_outliers_remove_all(popdata, pricedata, reviewdata, googledata, namedata, ownerdata):
     indexToRemove = []
     lower_range, upper_range = IQR_determine(popdata)
     [indexToRemove.append(i) for i, v in enumerate(popdata) if not lower_range <= v <= upper_range and not i in indexToRemove]
@@ -201,6 +204,9 @@ def IQR_outliers_remove_all(popdata, pricedata, reviewdata, googledata):
     [indexToRemove.append(i) for i, v in enumerate(reviewdata) if not lower_range <= v <= upper_range and not i in indexToRemove]
     lower_range, upper_range = IQR_determine(googledata)
     [indexToRemove.append(i) for i, v in enumerate(googledata) if not lower_range <= v <= upper_range or v == -1 or v == 100.0 and not i in indexToRemove]
+    lower_range, upper_range = IQR_determine(ownerdata)
+    [indexToRemove.append(i) for i, v in enumerate(ownerdata) if not lower_range <= v <= upper_range and not i in indexToRemove]
+    
     '''for i, v in enumerate(popdata):
         if not lower_range <= v <= upper_range:
             popdata.pop(i)
@@ -216,8 +222,10 @@ def IQR_outliers_remove_all(popdata, pricedata, reviewdata, googledata):
     pricesNO = [d for i, d in enumerate(pricedata) if not i in indexToRemove]
     reviewRatioNO = [d for i, d in enumerate(reviewdata) if not i in indexToRemove]
     googlePopularityNO = [d for i, d in enumerate(googledata) if not i in indexToRemove]
+    namedataNO = [d for i, d in enumerate(namedata) if not i in indexToRemove]
+    estimatedOwnersNO = [d for i, d in enumerate(ownerdata) if not i in indexToRemove]
     #releaseDatesNO = [d for i, d in enumerate(releasedata) if not i in indexToRemove]
-    return popNO, pricesNO, reviewRatioNO, googlePopularityNO#, releaseDatesNO
+    return popNO, pricesNO, reviewRatioNO, googlePopularityNO, namedataNO,estimatedOwnersNO#, releaseDatesNO
 
 '''
 def is_outlier(points, thresh=3.5):
@@ -270,7 +278,7 @@ for i in data:
     positiveReviews = data[i]["positive"];
     negativeReviews = data[i]["negative"];
     peakConcurrent = data[i]["peak_ccu"];
-    
+
     if peakConcurrent > 100 and peakConcurrent < 20000 and price < 100:
         if (not negativeReviews == 0 and not positiveReviews == 0):
             popularity.append(peakConcurrent);
@@ -281,6 +289,7 @@ for i in data:
             monthsData[releaseDate.split(" ")[0]][1] += peakConcurrent;
             releaseDates.append(releaseDate);
             gameNames.append(name);
+            estimatedOwners.append((int(data[i]["estimated_owners"].split(" - ")[0])+int(data[i]["estimated_owners"].split(" - ")[1])) / 2)
             count += 1;
 
             fname = name.encode('cp1252', 'ignore').decode('utf-8', 'ignore')
@@ -406,6 +415,8 @@ with open('dataframe.csv', 'r') as f:
 for i, v in trends_result_dict.items():
     #if len([x for x in trends_result_dict[i] if x != 0]) >= zero_threshold * len(trends_result_dict[i]):
     trends_result_dict[i] = (sum(v) / len(v)) if len(v) > 0 else -1;
+    if (i == "Phasmophobia"):
+        print(sum(v), "|", len(v))
         # get median of the array at index i and store it in the dictionary
     #trends_result_dict[i] = np.median(v);
     #else:
@@ -492,7 +503,7 @@ for i, v in enumerate(popularity):
 
 print(googlePopularity)
 
-popNO, pricesNO, reviewRatioNO, googlePopularityNO = IQR_outliers_remove_all(popularity, prices, reviewRatio, googlePopularity);
+popNO, pricesNO, reviewRatioNO, googlePopularityNO, namedataNO, estimatedOwnersNO = IQR_outliers_remove_all(popularity, prices, reviewRatio, googlePopularity, gameNames, estimatedOwners);
 #popNO, pricesNO, reviewRatioNO, googlePopularityNO = popularity, prices, reviewRatio, googlePopularity
 
 print(np.mean(popNO))
@@ -500,12 +511,12 @@ print(np.mean(popNO))
 print(len(popNO))
 
 data_csv_dict = [];
-with open('datacsv.csv', 'w') as f:
-    fields = ['Peak CCU', 'Price (USD)', 'Review Ratio', 'Web Exposure']
+with open('datacsv.csv', 'w', newline='', encoding='utf-8') as f:
+    fields = ['Name', 'Peak CCU', 'Price (USD)', 'Review Ratio', 'Web Exposure']
     writer = csv.DictWriter(f, fieldnames=fields)
     writer.writeheader();
     for i in range(len(popNO)):
-        data_csv_dict.append({'Peak CCU': popNO[i], 'Price (USD)': pricesNO[i], 'Review Ratio': reviewRatioNO[i], 'Web Exposure': googlePopularityNO[i]});
+        data_csv_dict.append({'Name': namedataNO[i],'Peak CCU': popNO[i], 'Price (USD)': pricesNO[i], 'Review Ratio': reviewRatioNO[i], 'Web Exposure': googlePopularityNO[i]});
     writer.writerows(data_csv_dict);
 
 
@@ -538,9 +549,9 @@ r = np.linspace(min(reviewRatioNO), max(reviewRatioNO), 100)
 w = np.linspace(min(googlePopularityNO), max(googlePopularityNO), 100)
 p = np.linspace(min(pricesNO), max(pricesNO), 100)
 #R, W, P = np.meshgrid(w, p, r, indexing='ij')
-R, P = np.meshgrid(r, p)
+W, P = np.meshgrid(w, p)
 #Z = clf.coef_[0] * W + clf.coef_[1] * P + clf.coef_[2] * R + clf.intercept_
-Z2D = clf.coef_[0] * R + clf.coef_[1] * P + clf.intercept_
+Z2D = clf.coef_[1] * W + clf.coef_[2] * P + clf.intercept_
 
 #R_flat = R.flatten()
 #W_flat = W.flatten()
@@ -553,13 +564,13 @@ fig = plt.figure()
 fig.set_figwidth(40)
 fig.set_figheight(10)
 ax = plt.axes(projection='3d')
-ax.set_xlabel('Ratio of Positive Reviews to Negative Reviews', fontsize=12, color='green')
+ax.set_xlabel('Mean of Web Exposure on Google Trends', fontsize=12, color='green')
 ax.set_ylabel('Price (USD)', fontsize=12, color='green')
 ax.set_zlabel('Peak Concurrent Players', fontsize=12, color='green')
-img = ax.scatter3D(reviewRatioNO, pricesNO, popNO, c=googlePopularityNO, cmap=plt.hot())
+img = ax.scatter3D(googlePopularityNO, pricesNO, popNO, c=reviewRatioNO, cmap=plt.hot())
 cbar = fig.colorbar(img)
-cbar.set_label("Mean of Web Exposure on Google Trends")
-ax.plot_surface(R, P, Z2D, alpha=0.5)
+cbar.set_label("Ratio of Positive Reviews to Negative Reviews")
+ax.plot_surface(W, P, Z2D, alpha=0.5)
 #sc = ax.scatter3D(W_flat, P_flat, Z_flat, c=R_flat, cmap='hot', alpha=0.5, label='Regression Plane')
 #plane = ax.plot_surface(W, P, Z, facecolors=plt.cm.hot(R/np.max(R)), alpha=0.5, rstride=100, cstride=100)
 #ax.plot_surface(W, P, R, Z2D, alpha=0.5)
@@ -567,13 +578,13 @@ plt.title("3D Graph of Web Exposure, Price, Review Ratio, and Popularity")
 plt.show()
 
 
-slope, intercept, r_value, p_value, std_err = stats.linregress(googlePopularityNO, popNO);
-line = slope*np.array(googlePopularityNO)+intercept;
+slope, intercept, r_value, p_value, std_err = stats.linregress(pricesNO, estimatedOwnersNO);
+line = slope*np.array(pricesNO)+intercept;
 
 #plt.plot(prices, popularity, "yo", prices, poly1d(prices), "--k");
-plt.plot(googlePopularityNO, line, "r", label = "y={:.2f}x+{:.2f}".format(slope, intercept));
+plt.plot(pricesNO, line, "r", label = "y={:.2f}x+{:.2f}".format(slope, intercept));
 # scatter to demonstrate no correlation between bing scraper and popularity
-plt.scatter(googlePopularityNO, popNO, color = "k", s=7.5);
+plt.scatter(pricesNO, estimatedOwnersNO, color = "k", s=7.5);
 plt.title("Number of Search Results on Bing and Peak Concurrent Players");
 plt.xlabel("Number of Search Results on Bing");
 plt.ylabel("Peak Concurrent Players");
